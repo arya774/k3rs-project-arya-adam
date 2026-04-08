@@ -14,12 +14,6 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Exports\InspeksiExport;
 use Maatwebsite\Excel\Facades\Excel;
 
-function exportExcel()
-{
-    return Excel::download(new InspeksiExport, 'inspeksi.xlsx');
-
-}
-
 class InspeksiController extends Controller
 {
     // ============================
@@ -92,73 +86,78 @@ class InspeksiController extends Controller
     }
 
     // ============================
-    // SIMPAN INSPEKSI
+    // SIMPAN INSPEKSI (FIX TOTAL)
     // ============================
     public function storeInspeksi(Request $request)
-{
-    $request->validate([
-        'tanggal' => 'required|date',
-        'ruangan' => 'required|string',
-        'nama_petugas_k3rs' => 'required|string',
-        'nama_petugas_ruangan' => 'required|string',
-        'nilai' => 'required|array'
-    ]);
+    {
+        // 🔥 DEBUG (hapus nanti kalau sudah jalan)
+        // dd($request->all());
 
-    // =====================
-    // PROSES PARAF
-    // =====================
-    $parafK3rsFile = null;
-    $parafRuanganFile = null;
-
-    // PARAF K3RS
-    if ($request->paraf_petugas_k3rs) {
-        $image = str_replace('data:image/png;base64,', '', $request->paraf_petugas_k3rs);
-        $image = str_replace(' ', '+', $image);
-        $parafK3rsFile = 'paraf_k3rs_' . time() . '.png';
-
-        Storage::disk('public')->put('paraf/' . $parafK3rsFile, base64_decode($image));
-    }
-
-    // PARAF RUANGAN
-    if ($request->paraf_petugas_ruangan) {
-        $image = str_replace('data:image/png;base64,', '', $request->paraf_petugas_ruangan);
-        $image = str_replace(' ', '+', $image);
-        $parafRuanganFile = 'paraf_ruangan_' . time() . '.png';
-
-        Storage::disk('public')->put('paraf/' . $parafRuanganFile, base64_decode($image));
-    }
-
-    // =====================
-    // SIMPAN DATA
-    // =====================
-    $inspeksi = DB::transaction(function () use ($request, $parafK3rsFile, $parafRuanganFile) {
-
-        $inspeksi = Inspeksi::create([
-            'tanggal' => $request->tanggal,
-            'ruangan' => $request->ruangan,
-
-            'nama_petugas_k3rs' => $request->nama_petugas_k3rs,
-            'paraf_petugas_k3rs' => $parafK3rsFile,
-
-            'nama_petugas_ruangan' => $request->nama_petugas_ruangan,
-            'paraf_petugas_ruangan' => $parafRuanganFile,
+        $request->validate([
+            'tanggal' => 'required|date',
+            'ruangan' => 'required|string',
+            'nama_petugas_k3rs' => 'required|string',
+            'nama_petugas_ruangan' => 'required|string',
         ]);
 
-        foreach ($request->nilai as $subId => $nilai) {
-            DetailInspeksi::create([
-                'inspeksi_id' => $inspeksi->id,
-                'sub_uraian_id' => $subId,
-                'nilai' => strtolower($nilai),
-                'catatan' => $request->catatan[$subId] ?? null
-            ]);
+        // =====================
+        // PARAF
+        // =====================
+        $parafK3rsFile = null;
+        $parafRuanganFile = null;
+
+        if ($request->paraf_petugas_k3rs) {
+            $image = str_replace('data:image/png;base64,', '', $request->paraf_petugas_k3rs);
+            $image = str_replace(' ', '+', $image);
+            $parafK3rsFile = 'paraf_k3rs_' . time() . '.png';
+
+            Storage::disk('public')->put('paraf/' . $parafK3rsFile, base64_decode($image));
         }
 
-        return $inspeksi;
-    });
+        if ($request->paraf_petugas_ruangan) {
+            $image = str_replace('data:image/png;base64,', '', $request->paraf_petugas_ruangan);
+            $image = str_replace(' ', '+', $image);
+            $parafRuanganFile = 'paraf_ruangan_' . time() . '.png';
 
-    return redirect()->route('inspeksi.hasil', $inspeksi->id)
-        ->with('success', 'Inspeksi berhasil disimpan!');
-}
+            Storage::disk('public')->put('paraf/' . $parafRuanganFile, base64_decode($image));
+        }
+
+        // =====================
+        // SIMPAN DB
+        // =====================
+        $inspeksi = DB::transaction(function () use ($request, $parafK3rsFile, $parafRuanganFile) {
+
+            $inspeksi = Inspeksi::create([
+                'tanggal' => $request->tanggal,
+                'ruangan' => $request->ruangan,
+                'nama_petugas_k3rs' => $request->nama_petugas_k3rs,
+                'paraf_petugas_k3rs' => $parafK3rsFile,
+                'nama_petugas_ruangan' => $request->nama_petugas_ruangan,
+                'paraf_petugas_ruangan' => $parafRuanganFile,
+            ]);
+
+            // 🔥 FIX: CEK NILAI ADA ATAU TIDAK
+            if ($request->has('nilai')) {
+
+                foreach ($request->nilai as $subId => $nilai) {
+
+                    if (!$nilai) continue;
+
+                    DetailInspeksi::create([
+                        'inspeksi_id' => $inspeksi->id,
+                        'sub_uraian_id' => $subId,
+                        'nilai' => strtolower($nilai),
+                        'catatan' => $request->catatan[$subId] ?? null
+                    ]);
+                }
+            }
+
+            return $inspeksi;
+        });
+
+        return redirect()->route('inspeksi.hasil', $inspeksi->id)
+            ->with('success', 'Inspeksi berhasil disimpan!');
+    }
 
     // ============================
     // HASIL
@@ -187,7 +186,7 @@ class InspeksiController extends Controller
     }
 
     // ============================
-    // PDF (DOWNLOAD + SIMPAN)
+    // PDF
     // ============================
     public function cetak($id)
     {
@@ -213,26 +212,23 @@ class InspeksiController extends Controller
 
         $fileName = 'inspeksi-' . $id . '.pdf';
 
-        // 🔥 PASTIKAN folder ada
         $path = storage_path('app/public/' . $fileName);
 
-        // 🔥 simpan file
         $pdf->save($path);
 
-        // 🔥 download file
         return response()->download($path, $fileName);
     }
 
+    // ============================
+    // EXCEL
+    // ============================
     public function exportExcel()
-{
-    return \Maatwebsite\Excel\Facades\Excel::download(
-        new \App\Exports\InspeksiExport,
-        'inspeksi.xlsx'
-    );
-}
+    {
+        return Excel::download(new InspeksiExport, 'inspeksi.xlsx');
+    }
 
     // ============================
-    // DASHBOARD (FIX FINAL)
+    // DASHBOARD
     // ============================
     public function dashboard()
     {
@@ -240,7 +236,6 @@ class InspeksiController extends Controller
             'detailInspeksi.subUraian.uraian.kategori'
         ])->latest()->first();
 
-        // 🔥 AMAN dari NULL
         $detail = $inspeksi ? $inspeksi->detailInspeksi : collect();
 
         $ya = $detail->where('nilai', 'ya')->count();

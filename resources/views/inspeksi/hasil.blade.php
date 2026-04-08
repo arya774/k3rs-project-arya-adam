@@ -45,11 +45,34 @@
         }
 
         .ttd-box {
-            margin-top: 40px;
+            margin-top: 50px;
         }
 
-        .ttd-box div {
-            text-align: center;
+        .ttd-img-box {
+            height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ttd-img {
+            max-height: 90px;
+            object-fit: contain;
+        }
+
+        .ttd-line {
+            border-top: 1px solid #000;
+            width: 60%;
+            margin: 10px auto;
+        }
+
+        .ttd-name {
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        .ttd-label {
+            font-weight: bold;
         }
     </style>
 </head>
@@ -120,7 +143,7 @@
     <div class="rekap-box mt-3">
         <h4>Rekap Nilai</h4>
 
-        <div class="row">
+        <div class="row text-center">
             <div class="col-md-3">
                 <p>Total Pertanyaan</p>
                 <h5>{{ $total }}</h5>
@@ -144,20 +167,42 @@
     </div>
 
     <!-- TANDA TANGAN -->
-    <div class="ttd-box row mt-4">
+    <div class="ttd-box row text-center">
+
+        <!-- K3RS -->
         <div class="col-md-6">
-            <p>Petugas K3RS</p>
-            <br><br><br>
-            <strong>{{ $inspeksi->nama_petugas_k3rs ?? '-' }}</strong><br>
-            <small>{{ $inspeksi->paraf_petugas_k3rs ?? 'Paraf' }}</small>
+            <p class="ttd-label">Petugas K3RS</p>
+
+            <div class="ttd-img-box">
+                @if(!empty($inspeksi->paraf_petugas_k3rs) && file_exists(public_path('storage/paraf/' . $inspeksi->paraf_petugas_k3rs)))
+                    <img src="{{ asset('storage/paraf/' . $inspeksi->paraf_petugas_k3rs) }}" class="ttd-img">
+                @endif
+            </div>
+
+            <div class="ttd-line"></div>
+
+            <div class="ttd-name">
+                {{ $inspeksi->nama_petugas_k3rs ?? '-' }}
+            </div>
         </div>
 
+        <!-- RUANGAN -->
         <div class="col-md-6">
-            <p>Petugas Ruangan</p>
-            <br><br><br>
-            <strong>{{ $inspeksi->nama_petugas_ruangan ?? '-' }}</strong><br>
-            <small>{{ $inspeksi->paraf_petugas_ruangan ?? 'Paraf' }}</small>
+            <p class="ttd-label">Petugas Ruangan</p>
+
+            <div class="ttd-img-box">
+                @if(!empty($inspeksi->paraf_petugas_ruangan) && file_exists(public_path('storage/paraf/' . $inspeksi->paraf_petugas_ruangan)))
+                    <img src="{{ asset('storage/paraf/' . $inspeksi->paraf_petugas_ruangan) }}" class="ttd-img">
+                @endif
+            </div>
+
+            <div class="ttd-line"></div>
+
+            <div class="ttd-name">
+                {{ $inspeksi->nama_petugas_ruangan ?? '-' }}
+            </div>
         </div>
+
     </div>
 
 </div>

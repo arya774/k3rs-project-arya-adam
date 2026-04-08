@@ -106,118 +106,119 @@
         </form>
     </div>
 
-    <!-- ================= STEP 2 ================= -->
-    <div class="step" id="step2">
-        <h4>Formulir Inspeksi RSUD</h4>
+   <!-- ================= STEP 2 ================= -->
+<div class="step" id="step2">
+    <h4>Formulir Inspeksi RSUD</h4>
+    <form id="formInspeksi" action="{{route('inspeksi.store')}}" method="POST">
+         @csrf
 
-            @csrf
+    <!-- 🔥 FORM WAJIB ADA -->
+    <form id="formInspeksi" method="POST" action="{{ route('inspeksi.store') }}">
+        @csrf
 
-            <div class="row">
-                <div class="col-md-6 mb-2">
-                    <label>Tanggal</label>
-                    <input type="date" name="tanggal" id="tanggal" class="form-control" required>
-                </div>
-
-                <div class="col-md-6 mb-2">
-                    <label>Ruangan</label>
-                    <input type="text" name="ruangan" class="form-control" required>
-                </div>
+        <div class="row">
+            <div class="col-md-6 mb-2">
+                <label>Tanggal</label>
+                <input type="date" name="tanggal" id="tanggal" class="form-control" required>
             </div>
 
-            <!-- PETUGAS -->
-            <div class="card mt-3 mb-3">
-                <div class="card-header bg-success text-white">Data Petugas</div>
+            <div class="col-md-6 mb-2">
+                <label>Ruangan</label>
+                <input type="text" name="ruangan" class="form-control" required>
+            </div>
+        </div>
+
+        <!-- ================= PETUGAS ================= -->
+        <div class="card mt-3 mb-3">
+            <div class="card-header bg-success text-white">Data Petugas</div>
+            <div class="card-body">
+
+                <!-- PETUGAS K3RS -->
+                <div class="mb-4">
+                    <label>Nama Petugas K3RS</label>
+                    <input type="text" name="nama_petugas_k3rs" class="form-control mb-2" required>
+
+                    <label>Paraf</label>
+                    <canvas id="signature-pad-k3rs" style="border:1px solid #000; width:200px; height:150px;"></canvas>
+                    <input type="hidden" name="paraf_petugas_k3rs" id="paraf_k3rs">
+
+                    <button type="button" class="btn btn-sm btn-danger mt-2" onclick="clearK3rs()">Hapus</button>
+                </div>
+
+                <!-- PETUGAS RUANGAN -->
+                <div class="mb-4">
+                    <label>Nama Petugas Ruangan</label>
+                    <input type="text" name="nama_petugas_ruangan" class="form-control mb-2" required>
+
+                    <label>Paraf</label>
+                    <canvas id="signature-pad-ruangan" style="border:1px solid #000; width:200px; height:150px;"></canvas>
+                    <input type="hidden" name="paraf_petugas_ruangan" id="paraf_ruangan">
+
+                    <button type="button" class="btn btn-sm btn-danger mt-2" onclick="clearRuangan()">Hapus</button>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ================= FILTER ================= -->
+        <div class="mb-3">
+            <label>Pilih Kategori</label>
+            <select id="filterKategori" class="form-select">
+                <option value="">-- Pilih Kategori --</option>
+                @foreach($kategoris as $k)
+                    <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- ================= DATA ================= -->
+        @foreach($kategoris as $k)
+        <div class="kategori-box" id="kategori-{{ $k->id }}" style="display:none;">
+            <div class="card mb-3 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    {{ $k->nama_kategori }}
+                </div>
+
                 <div class="card-body">
-                    <div class="row">
+                    @foreach($k->uraian as $u)
+                        <h5 class="text-primary">{{ $u->nama_uraian }}</h5>
 
-                        <!-- PETUGAS K3RS -->
-<div class="mb-4">
-    <label>Nama Petugas K3RS</label>
-    <input type="text" name="nama_petugas_k3rs" class="form-control mb-2" required>
+                        @foreach($u->suburaian as $s)
+                        <div class="mb-3 ms-3 p-3 border rounded bg-light">
 
-    <label>Paraf</label>
-    <canvas id="signature-pad-k3rs" style="border:1px solid #000; width:20%; height:150px;"></canvas>
-    <input type="hidden" name="paraf_petugas_k3rs" id="paraf_k3rs">
+                            <strong>{{ $s->nama_sub_uraian }}</strong>
 
-    <button type="button" class="btn btn-sm btn-danger mt-2" onclick="clearK3rs()">Hapus</button>
-</div>
+                            <div class="mt-2">
+                                <label class="me-3">
+                                    <input type="radio" name="nilai[{{ $s->id }}]" value="ya">
+                                    <span class="text-success fw-bold">Ya</span>
+                                </label>
 
-<!-- PETUGAS RUANGAN -->
-<div class="mb-4">
-    <label>Nama Petugas Ruangan</label>
-    <input type="text" name="nama_petugas_ruangan" class="form-control mb-2" required>
+                                <label>
+                                    <input type="radio" name="nilai[{{ $s->id }}]" value="tidak">
+                                    <span class="text-danger fw-bold">Tidak</span>
+                                </label>
+                            </div>
 
-    <label>Paraf</label>
-    <canvas id="signature-pad-ruangan" style="border:1px solid #000; width:20%; height:150px;"></canvas>
-    <input type="hidden" name="paraf_petugas_ruangan" id="paraf_ruangan">
-
-    <button type="button" class="btn btn-sm btn-danger mt-2" onclick="clearRuangan()">Hapus</button>
-</div>
+                            <input type="text"
+                                   name="catatan[{{ $s->id }}]"
+                                   class="form-control mt-2"
+                                   placeholder="Catatan (opsional)">
                         </div>
+                        @endforeach
 
-                    </div>
-                </div>
-            </div>
-
-            <!-- FILTER -->
-            <div class="mb-3">
-                <label>Pilih Kategori</label>
-                <select id="filterKategori" class="form-select">
-                    <option value="">-- Pilih Kategori --</option>
-                    @foreach($kategoris as $k)
-                        <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
                     @endforeach
-                </select>
-            </div>
-
-            <!-- DATA -->
-            @foreach($kategoris as $k)
-                <div class="kategori-box" id="kategori-{{ $k->id }}" style="display:none;">
-                    <div class="card mb-3 shadow-sm">
-                        <div class="card-header bg-primary text-white">
-                            {{ $k->nama_kategori }}
-                        </div>
-
-                        <div class="card-body">
-                            @foreach($k->uraian as $u)
-                                <h5 class="text-primary">{{ $u->nama_uraian }}</h5>
-
-                                @foreach($u->suburaian as $s)
-                                    <div class="mb-3 ms-3 p-3 border rounded bg-light">
-
-                                        <strong>{{ $s->nama_sub_uraian }}</strong>
-
-                                        <div class="mt-2">
-                                            <label class="me-3">
-                                                <input type="radio" name="nilai[{{ $s->id }}]" value="ya">
-                                                <span class="text-success fw-bold">Ya</span>
-                                            </label>
-
-                                            <label>
-                                                <input type="radio" name="nilai[{{ $s->id }}]" value="tidak">
-                                                <span class="text-danger fw-bold">Tidak</span>
-                                            </label>
-                                        </div>
-
-                                        <input type="text"
-                                               name="catatan[{{ $s->id }}]"
-                                               class="form-control mt-2"
-                                               placeholder="Catatan (opsional)">
-                                    </div>
-                                @endforeach
-
-                            @endforeach
-                        </div>
-                    </div>
                 </div>
-            @endforeach
+            </div>
+        </div>
+        @endforeach
 
-            <button class="btn btn-success w-100">
-                💾 Simpan Inspeksi
-            </button>
-        </form>
-    </div>
+        <!-- 🔥 BUTTON SUBMIT -->
+        <button type="submit" class="btn btn-success w-100">
+            💾 Simpan Inspeksi
+        </button>
 
+    </form>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -243,10 +244,39 @@ $('#filterKategori').change(function(){
 });
 
 // VALIDASI FIX
-$('#formInspeksi').submit(function(e){
+$('#formInspeksi').on('submit', function(e){
 
     let valid = true;
 
+    // ✅ hanya cek yang terlihat saja
+    $('.kategori-box:visible').find('input[type=radio]').each(function(){
+
+        let name = $(this).attr('name');
+
+        if($('input[name="'+name+'"]:checked').length === 0){
+            valid = false;
+        }
+
+    });
+
+    if(!valid){
+        alert('Isi semua pertanyaan pada kategori yang dipilih!');
+        e.preventDefault();
+        return;
+    }
+
+    // =====================
+    // PARAF
+    // =====================
+    if (!signaturePadK3rs.isEmpty()) {
+        $('#paraf_k3rs').val(signaturePadK3rs.toDataURL());
+    }
+
+    if (!signaturePadRuangan.isEmpty()) {
+        $('#paraf_ruangan').val(signaturePadRuangan.toDataURL());
+    }
+
+});
     $('.kategori-box:visible input[type=radio]').each(function(){
 
         let name = $(this).attr('name');
@@ -262,7 +292,6 @@ $('#formInspeksi').submit(function(e){
         e.preventDefault();
     }
 
-});
 
 // AJAX MASTER
 $.ajaxSetup({

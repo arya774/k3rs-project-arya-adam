@@ -46,13 +46,20 @@
         }
 
         .ttd {
-            margin-top: 40px;
+            margin-top: 50px;
             width: 100%;
         }
 
         .ttd td {
             border: none;
             text-align: center;
+            width: 50%;
+        }
+
+        .line {
+            border-top: 1px solid black;
+            width: 200px;
+            margin: 5px auto;
         }
     </style>
 </head>
@@ -119,17 +126,47 @@
 <!-- TANDA TANGAN -->
 <table class="ttd">
     <tr>
+
+        <!-- K3RS -->
         <td>
-            Petugas K3RS<br><br><br><br>
-            <strong>{{ $inspeksi->nama_petugas_k3rs ?? '-' }}</strong><br>
-            ({{ $inspeksi->paraf_petugas_k3rs ?? 'Paraf' }})
+            <strong>Petugas K3RS</strong><br><br>
+
+            @php
+                $path_k3rs = public_path('storage/paraf/' . $inspeksi->paraf_petugas_k3rs);
+            @endphp
+
+            @if(!empty($inspeksi->paraf_petugas_k3rs) && file_exists($path_k3rs))
+                <img src="data:image/png;base64,{{ base64_encode(file_get_contents($path_k3rs)) }}" 
+                     style="height:80px;"><br>
+            @else
+                <br><br>
+            @endif
+
+            <div class="line"></div>
+
+            <strong>{{ $inspeksi->nama_petugas_k3rs ?? '-' }}</strong>
         </td>
 
+        <!-- RUANGAN -->
         <td>
-            Petugas Ruangan<br><br><br><br>
-            <strong>{{ $inspeksi->nama_petugas_ruangan ?? '-' }}</strong><br>
-            ({{ $inspeksi->paraf_petugas_ruangan ?? 'Paraf' }})
+            <strong>Petugas Ruangan</strong><br><br>
+
+            @php
+                $path_ruangan = public_path('storage/paraf/' . $inspeksi->paraf_petugas_ruangan);
+            @endphp
+
+            @if(!empty($inspeksi->paraf_petugas_ruangan) && file_exists($path_ruangan))
+                <img src="data:image/png;base64,{{ base64_encode(file_get_contents($path_ruangan)) }}" 
+                     style="height:80px;"><br>
+            @else
+                <br><br>
+            @endif
+
+            <div class="line"></div>
+
+            <strong>{{ $inspeksi->nama_petugas_ruangan ?? '-' }}</strong>
         </td>
+
     </tr>
 </table>
 

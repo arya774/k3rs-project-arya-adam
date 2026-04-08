@@ -81,6 +81,18 @@
     @empty
         <p class="text-light">Tidak ada kategori</p>
     @endforelse
+
+    <!-- 🔥 LOGOUT -->
+    <hr>
+    <form method="POST" action="{{ route('logout') }}">
+        @csrf
+        <button 
+            type="submit" 
+            class="btn btn-danger w-100 mt-2"
+        >
+            🚪 Logout
+        </button>
+    </form>
 </div>
 
 <!-- ================= CONTENT ================= -->
@@ -133,13 +145,14 @@
 
     </div>
 
+    <!-- 🔥 FIX BUTTON -->
     <div class="mt-3">
         <a href="{{ route('inspeksi.cetak', $inspeksi->id) }}" class="btn btn-primary">
             Cetak PDF
-            
-            <a href="/inspeksi/export-excel" class="btn btn-success">
-    Cetak Excel
-</a>
+        </a>
+
+        <a href="{{ route('inspeksi.export.excel') }}" class="btn btn-success">
+            Cetak Excel
         </a>
     </div>
 
@@ -215,19 +228,15 @@ $(document).ready(function(){
         $('.sidebar a').removeClass('active');
     }
 
-    // DASHBOARD
     $('.menu-dashboard').click(function(e){
         e.preventDefault();
-
         resetMenu();
         $(this).addClass('active');
-
         $('#dashboard-box').fadeIn(200);
         $('#kategori-wrapper').hide();
         $('.kategori-box').hide();
     });
 
-    // KATEGORI
     $('.menu-kategori').click(function(e){
         e.preventDefault();
 
@@ -243,7 +252,6 @@ $(document).ready(function(){
         $('#kategori-' + id).fadeIn(200);
     });
 
-    // DEFAULT
     $('.menu-dashboard').trigger('click');
 
 });
