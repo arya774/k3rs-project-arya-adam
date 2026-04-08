@@ -213,7 +213,7 @@
             @endforeach
 
             <button class="btn btn-success w-100">
-                💾 Simpan Inspeksi
+                💾 Simpan
             </button>
         </form>
     </div>
