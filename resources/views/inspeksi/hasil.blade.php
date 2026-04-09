@@ -166,46 +166,45 @@
         </div>
     </div>
 
-    <!-- TANDA TANGAN -->
-    <div class="ttd-box row text-center">
+   <!-- TANDA TANGAN -->
+<div class="ttd-box row text-center">
 
-        <!-- K3RS -->
-        <div class="col-md-6">
-            <p class="ttd-label">Petugas K3RS</p>
+    <!-- K3RS -->
+    <div class="col-md-6">
+        <p class="ttd-label">Petugas K3RS</p>
 
-            <div class="ttd-img-box">
-                @if(!empty($inspeksi->paraf_petugas_k3rs) && file_exists(public_path('storage/paraf/' . $inspeksi->paraf_petugas_k3rs)))
-                    <img src="{{ asset('storage/paraf/' . $inspeksi->paraf_petugas_k3rs) }}" class="ttd-img">
-                @endif
-            </div>
-
-            <div class="ttd-line"></div>
-
-            <div class="ttd-name">
-                {{ $inspeksi->nama_petugas_k3rs ?? '-' }}
-            </div>
+        <div class="ttd-img-box">
+            @if(!empty($inspeksi->paraf_petugas_k3rs))
+                <img src="{{ asset('storage/paraf/' . $inspeksi->paraf_petugas_k3rs) }}" class="ttd-img">
+            @else
+                <span class="text-muted">Belum ada tanda tangan</span>
+            @endif
         </div>
 
-        <!-- RUANGAN -->
-        <div class="col-md-6">
-            <p class="ttd-label">Petugas Ruangan</p>
+        <div class="ttd-line"></div>
 
-            <div class="ttd-img-box">
-                @if(!empty($inspeksi->paraf_petugas_ruangan) && file_exists(public_path('storage/paraf/' . $inspeksi->paraf_petugas_ruangan)))
-                    <img src="{{ asset('storage/paraf/' . $inspeksi->paraf_petugas_ruangan) }}" class="ttd-img">
-                @endif
-            </div>
+        <div class="ttd-name">
+            {{ $inspeksi->nama_petugas_k3rs ?? '-' }}
+        </div>
+    </div>
 
-            <div class="ttd-line"></div>
+    <!-- RUANGAN -->
+    <div class="col-md-6">
+        <p class="ttd-label">Petugas Ruangan</p>
 
-            <div class="ttd-name">
-                {{ $inspeksi->nama_petugas_ruangan ?? '-' }}
-            </div>
+        <div class="ttd-img-box">
+            @if(!empty($inspeksi->paraf_petugas_ruangan))
+                <img src="{{ asset('storage/paraf/' . $inspeksi->paraf_petugas_ruangan) }}" class="ttd-img">
+            @else
+                <span class="text-muted">Belum ada tanda tangan</span>
+            @endif
         </div>
 
+        <div class="ttd-line"></div>
+
+        <div class="ttd-name">
+            {{ $inspeksi->nama_petugas_ruangan ?? '-' }}
+        </div>
     </div>
 
 </div>
-
-</body>
-</html>

@@ -213,18 +213,12 @@
         </div>
         @endforeach
 
-<<<<<<< HEAD
-        <!-- 🔥 BUTTON SUBMIT -->
-        <button type="submit" class="btn btn-success w-100">
-            💾 Simpan Inspeksi
-        </button>
-=======
             <button class="btn btn-success w-100">
                 💾 Simpan
             </button>
         </form>
     </div>
->>>>>>> 429f5177f2daf036c2423916ce61ff6653fbafd7
+
 
     </form>
 </div>
