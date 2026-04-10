@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
+
 class LoginController extends Controller
 {
     /**
@@ -27,21 +28,15 @@ class LoginController extends Controller
         // 🔍 Cek user berdasarkan NIP
         $user = User::where('nip', $nip)->first();
 
-        // 🔥 AUTO REGISTER jika belum ada
-        if (!$user) {
-            $user = User::create([
-                'name' => 'User ' . $nip,
-                'nip' => $nip,
-                'password' => Hash::make($password),
-            ]);
-        }
+$user = User::where('nip', $request->nip)->first();
 
-        // ❌ Jika password salah
-        if (!Hash::check($password, $user->password)) {
-            return back()->withErrors([
-                'password' => 'Password salah!',
-            ])->withInput(); // 🔥 biar nip tidak hilang
-        }
+// ❌ jika user tidak ada ATAU password salah
+if (!$user || !Hash::check($request->password, $user->password)) {
+    return back()->withErrors([
+        'login' => 'Wrong account or password'
+    ])->withInput();
+}
+
 
         // 🔑 Login user
         Auth::login($user);
