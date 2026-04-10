@@ -7,34 +7,39 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        body { background: #f4f6f9; }
+        body { 
+            background: #f4f6f9; 
+            font-family: 'Segoe UI', sans-serif;
+        }
 
+        /* 🔥 SIDEBAR SAMA PERSIS DENGAN WIZARD */
         .sidebar {
             height: 100vh;
-            background: #343a40;
+            background: #0d6efd;
             color: white;
             padding: 20px;
         }
 
-        .sidebar h5 { color: #ffc107; }
-
         .sidebar a {
-            color: white;
-            text-decoration: none;
             display: block;
-            padding: 8px;
-            border-radius: 5px;
-            transition: 0.2s;
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 5px;
         }
 
-        .sidebar a:hover { background: #495057; }
-
+        .sidebar a:hover,
         .sidebar a.active {
-            background: #ffc107;
-            color: black !important;
-            font-weight: bold;
+            background: rgba(255,255,255,0.2);
         }
 
+        /* CONTENT */
+        .content { 
+            padding: 20px; 
+        }
+
+        /* CARD */
         .card-summary {
             border-radius: 10px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
@@ -45,7 +50,9 @@
             font-weight: bold;
         }
 
-        .content { padding: 20px; }
+        .card {
+            border-radius: 10px;
+        }
 
         @media(max-width: 768px){
             .sidebar { height: auto; }
@@ -82,16 +89,13 @@
         <p class="text-light">Tidak ada kategori</p>
     @endforelse
 
-    <!-- 🔥 LOGOUT -->
     <hr>
+
     <form method="POST" action="{{ route('logout') }}">
         @csrf
-        <button 
-            type="submit" 
-            class="btn btn-danger w-100 mt-2"
-        >
-            🚪 Logout
-        </button>
+        <button class="btn btn-light text-primary rounded-pill px-4 shadow-sm">
+    Logout
+</button>
     </form>
 </div>
 
@@ -102,7 +106,6 @@
 
 @if($inspeksi)
 
-<!-- ================= DASHBOARD ================= -->
 <div id="dashboard-box">
 
     <div class="row">
@@ -145,7 +148,6 @@
 
     </div>
 
-    <!-- 🔥 FIX BUTTON -->
     <div class="mt-3">
         <a href="{{ route('inspeksi.cetak', $inspeksi->id) }}" class="btn btn-primary">
             Cetak PDF
@@ -160,7 +162,6 @@
 
 <hr>
 
-<!-- ================= KATEGORI ================= -->
 <div id="kategori-wrapper" style="display:none;">
 
 <h5>Data Inspeksi per Kategori</h5>
@@ -175,7 +176,7 @@
 
 <div class="kategori-box mt-3" id="kategori-{{ $k->id }}" style="display:none;">
     <div class="card shadow-sm">
-        <div class="card-header bg-dark text-white">
+        <div class="card-header bg-primary text-white">
             {{ $k->nama_kategori }}
         </div>
 
