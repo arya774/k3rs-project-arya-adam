@@ -54,7 +54,7 @@
 <body>
 
 <div class="sidebar">
-    <h4>TUTI FATIMAH</h4>
+    <h4>ASTUTI</h4>
 
     <a href="#" onclick="showStep(1)" id="menu1" class="active">Master Data</a>
     <a href="#" onclick="showStep(2)" id="menu2">Form Inspeksi</a>
