@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Laravel</title>
 
+<link rel="stylesheet" href="{{ asset('css/style.css') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 flex items-center justify-center min-h-screen">
 
     <main class="bg-white dark:bg-gray-800 p-8 rounded shadow-md w-full max-w-md text-center">
-        
+
         <h1 class="text-2xl font-bold mb-4 text-gray-800 dark:text-white">
             Welcome 🚀
         </h1>
@@ -44,3 +45,5 @@
 
 </body>
 </html>
+<h1 style="color:red;">TES BERHASIL</h1>
+<link rel="stylesheet" href="{{ asset('css/style.css') }}">
