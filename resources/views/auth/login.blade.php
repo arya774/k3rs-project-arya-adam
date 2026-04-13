@@ -6,9 +6,9 @@
         </h2>
 
         <!-- SESSION STATUS -->
-        <x-auth-session-status 
-            class="mb-4 text-center text-green-600" 
-            :status="session('status')" 
+        <x-auth-session-status
+            class="mb-4 text-center text-green-600"
+            :status="session('status')"
         />
 
         <!-- ERROR GLOBAL -->
@@ -18,6 +18,7 @@
             </div>
         @endif
 
+
         <!-- 🔥 FORM LOGIN (SUDAH FIX) -->
         <form method="POST" action="{{ route('login.process') }}">
             @csrf
@@ -25,15 +26,15 @@
             <!-- NIP -->
             <div>
                 <x-input-label for="nip" value="NIP" />
-                <x-text-input 
-                    id="nip" 
-                    class="block mt-1 w-full" 
-                    type="text" 
-                    name="nip" 
-                    :value="old('nip')" 
+                <x-text-input
+                    id="nip"
+                    class="block mt-1 w-full"
+                    type="text"
+                    name="nip"
+                    :value="old('nip')"
                     placeholder="Masukkan NIP"
-                    required 
-                    autofocus 
+                    required
+                    autofocus
                 />
                 <x-input-error :messages="$errors->get('nip')" class="mt-2" />
             </div>
@@ -41,13 +42,13 @@
             <!-- PASSWORD -->
             <div class="mt-4">
                 <x-input-label for="password" value="Password" />
-                <x-text-input 
-                    id="password" 
+                <x-text-input
+                    id="password"
                     class="block mt-1 w-full"
                     type="password"
                     name="password"
                     placeholder="Masukkan password"
-                    required 
+                    required
                 />
                 <x-input-error :messages="$errors->get('password')" class="mt-2" />
             </div>
@@ -55,8 +56,8 @@
             <!-- REMEMBER ME -->
             <div class="block mt-4">
                 <label class="inline-flex items-center">
-                    <input 
-                        type="checkbox" 
+                    <input
+                        type="checkbox"
                         name="remember"
                         class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
                     >

@@ -11,6 +11,9 @@ use App\Http\Controllers\Auth\LoginController;
 |--------------------------------------------------------------------------
 */
 
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+
 // 🔒 Halaman login (hanya untuk guest / belum login)
 Route::middleware('guest')->group(function () {
 
