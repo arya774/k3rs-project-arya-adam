@@ -1,3 +1,8 @@
+<style>
+body {
+    background: red !important;
+}
+</style>
 <div class="bg-red-500 text-white p-5">
     TEST MERAH
 </div>
@@ -7,9 +12,46 @@
             {{ __('Dashboard') }}
         </h2>
     </x-slot>
+<div class="content-box">
+    <h4 class="mb-4">Dashboard Inspeksi</h4>
 
+    <div class="row g-3">
+        <div class="col-md-3">
+           <div class="card card-custom">
+                <h6>Total</h6>
+                <h2>1</h2>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card-custom bg-green text-center">
+                <h6>YA</h6>
+                <h2>1</h2>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card-custom bg-red text-center">
+                <h6>TIDAK</h6>
+                <h2>0</h2>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card-custom bg-yellow text-center">
+                <h6>%</h6>
+                <h2>100%</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <button class="btn btn-primary btn-custom">Cetak PDF</button>
+        <button class="btn btn-success btn-custom">Cetak Excel</button>
+    </div>
+</div>
     <div class="container">
-    <div class="card">
+ <div class="card card-custom">
         <h2>Dashboard</h2>
         <button class="btn">Simpan</button>
     </div>
@@ -40,7 +82,7 @@ Route::get('/', function () {
     <h1 class="text-2xl font-bold mb-4">Dashboard Inspeksi</h1>
 
     <div class="flex gap-5 flex-wrap">
-        <div class="card-box card-blue">
+       <div class="card card-custom">
             <div class="card-title">Total</div>
             <div class="card-value">1</div>
         </div>

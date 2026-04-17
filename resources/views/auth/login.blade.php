@@ -6,6 +6,7 @@
         </h2>
 
 
+
         <!-- SESSION STATUS -->
         <x-auth-session-status
             class="mb-4 text-center text-green-600"

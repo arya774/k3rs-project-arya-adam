@@ -344,6 +344,8 @@ $('#formInspeksi').submit(function(){
     }
 
 });
+
+<button class="btn btn-primary">Tambah</button>
 function resizeCanvas(canvas, signaturePad) {
     const ratio = Math.max(window.devicePixelRatio || 1, 1);
 

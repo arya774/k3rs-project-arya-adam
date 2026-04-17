@@ -7,50 +7,89 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        body { background: #f4f6f9; }
+    :root {
+        --primary: #0075f2;
+        --success: #16a34a;
+        --danger: #dc2626;
+        --warning: #facc15;
+        --sidebar: #0d6efd;
+        --bg: #f1f5f9;
+    }
 
-        .sidebar {
-            height: 100vh;
-            background: #343a40;
-            color: white;
-            padding: 20px;
-        }
+    body {
+        background: var(--bg);
+    }
 
-        .sidebar h5 { color: #ffc107; }
+    .title-page {
+    font-size: 16px;
+}
 
-        .sidebar a {
-            color: white;
-            text-decoration: none;
-            display: block;
-            padding: 8px;
-            border-radius: 5px;
-            transition: 0.2s;
-        }
+    /* SIDEBAR */
+    .sidebar {
+        height: 100vh;
+        background: var(--sidebar);
+        color: white;
+        padding: 20px;
+    }
 
-        .sidebar a:hover { background: #495057; }
+    .sidebar h5 { color: #ffffff; }
 
-        .sidebar a.active {
-            background: #ffc107;
-            color: black !important;
-            font-weight: bold;
-        }
+    .sidebar a {
+        color: #cbd5e1;
+        text-decoration: none;
+        display: block;
+        padding: 8px;
+        border-radius: 6px;
+        transition: 0.2s;
+    }
 
-        .card-summary {
-            border-radius: 10px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
+    .sidebar a:hover {
+        background: #334155;
+    }
 
-        .percent {
-            font-size: 1.8rem;
-            font-weight: bold;
-        }
+    .sidebar a.active {
+        background: var(--primary);
+        color: white !important;
+        font-weight: bold;
+    }
 
-        .content { padding: 20px; }
+    /* CARD */
+    .card-summary {
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        border: none;
+    }
 
-        @media(max-width: 768px){
-            .sidebar { height: auto; }
-        }
-    </style>
+    .bg-primary {
+        background: var(--primary) !important;
+    }
+
+    .bg-success {
+        background: var(--success) !important;
+    }
+
+    .bg-danger {
+        background: var(--danger) !important;
+    }
+
+    .bg-warning {
+        background: var(--warning) !important;
+        color: black !important;
+    }
+
+    .percent {
+        font-size: 1.8rem;
+        font-weight: bold;
+    }
+
+    .content {
+        padding: 20px;
+    }
+
+    @media(max-width: 768px){
+        .sidebar { height: auto; }
+    }
+</style>
 </head>
 
 <body>
@@ -59,7 +98,7 @@
 <div class="row">
 
 <!-- ================= SIDEBAR ================= -->
-<div class="col-md-3 sidebar">
+<div class="col-md-2 sidebar">
     <h5>📋 Menu</h5>
 
     <a href="{{ route('inspeksi.wizard') }}">
@@ -86,8 +125,8 @@
     <hr>
     <form method="POST" action="{{ route('logout') }}">
         @csrf
-        <button 
-            type="submit" 
+        <button
+            type="submit"
             class="btn btn-danger w-100 mt-2"
         >
             🚪 Logout
@@ -101,6 +140,7 @@
 <h3 class="mb-3">Dashboard Inspeksi</h3>
 
 @if($inspeksi)
+
 
 <!-- ================= DASHBOARD ================= -->
 <div id="dashboard-box">
@@ -253,6 +293,7 @@ $(document).ready(function(){
     });
 
     $('.menu-dashboard').trigger('click');
+
 
 });
 </script>
