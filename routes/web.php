@@ -12,6 +12,7 @@ use App\Http\Controllers\Auth\LoginController;
 */
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::get('/get-uraian/{id}', [InspeksiController::class, 'getUraian']);
 
 
 // 🔒 Halaman login (hanya untuk guest / belum login)

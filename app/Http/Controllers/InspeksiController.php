@@ -28,6 +28,10 @@ class InspeksiController extends Controller
         return view('inspeksi.wizard', compact('kategoris'));
     }
 
+    public function getUraian($id)
+{
+    return \App\Models\Uraian::where('kategori_id', $id)->get();
+}
     // ============================
     // MASTER DATA
     // ============================
@@ -84,6 +88,7 @@ class InspeksiController extends Controller
             ], 500);
         }
     }
+
 
     // ============================
     // SIMPAN INSPEKSI (FIX TOTAL)
