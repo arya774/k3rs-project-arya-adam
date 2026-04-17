@@ -229,3 +229,61 @@ body {
     padding: 25px;
     box-shadow: 0 5px 20px rgba(0,0,0,0.05);
 }
+
+:root {
+    --primary: #1e3a8a;      /* biru utama */
+    --secondary: #1d4ed8;    /* biru terang */
+    --success: #16a34a;      /* hijau */
+    --danger: #dc2626;       /* merah */
+    --warning: #f59e0b;      /* kuning */
+    --bg: #f1f5f9;           /* background */
+    --sidebar: #0f172a;      /* sidebar gelap */
+    --text: #1e293b;
+}
+body {
+    background-color: var(--bg);
+    color: var(--text);
+}
+.sidebar {
+    background-color: var(--sidebar);
+    color: white;
+}
+
+.sidebar a {
+    color: #cbd5f5;
+}
+
+.sidebar a.active {
+    background-color: var(--primary);
+    color: white;
+}
+.card-custom {
+    border-radius: 12px;
+    color: white;
+    padding: 20px;
+    font-weight: bold;
+}
+
+.card-primary {
+    background: var(--primary);
+}
+
+.card-success {
+    background: var(--success);
+}
+
+.card-danger {
+    background: var(--danger);
+}
+
+.card-warning {
+    background: var(--warning);
+}
+.btn-primary {
+    background: var(--secondary);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: var(--primary);
+}

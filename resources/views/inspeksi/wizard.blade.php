@@ -62,6 +62,11 @@
 <body>
 
 <div class="sidebar">
+<<<<<<< HEAD
+=======
+    <h4>ASTUTI</h4>
+
+>>>>>>> 7e358a622973d0aa0eaf766dbb0612e263544bcc
     <a href="#" onclick="showStep(1)" id="menu1" class="active">Master Data</a>
     <a href="#" onclick="showStep(2)" id="menu2">Form Inspeksi</a>
     <a href="{{ route('inspeksi.dashboard') }}">Dashboard</a>
@@ -73,6 +78,7 @@
 <!-- STEP 1 -->
 <div class="step active" id="step1">
 
+<<<<<<< HEAD
     <h5>Kategori</h5>
     <form id="formKategori">
         <input type="text" name="nama_kategori" class="form-control mb-2" required>
@@ -101,12 +107,62 @@
             @foreach($kategoris as $k)
                 @foreach($k->uraian as $u)
                     <option value="{{ $u->id }}">{{ $u->nama_uraian }}</option>
+=======
+    <!-- ================= STEP 1 ================= -->
+    <div class="step active" id="step1">
+    <h4>Master Data Inspeksi</h4>
+
+    <!-- ================= KATEGORI ================= -->
+    <form id="formKategori" class="mb-3">
+        <input type="text" name="nama_kategori" class="form-control mb-2" required>
+
+        <button type="submit" class="btn btn-primary btn-sm px-4 mt-2 rounded-pill shadow-sm">
+            + Tambah
+        </button>
+    </form>
+
+    <!-- ================= URAIAN ================= -->
+    <form id="formUraian" class="mb-3">
+        <select name="kategori_id" class="form-select mb-2" required>
+            <option value="">Pilih Kategori</option>
+            @foreach($kategoris as $k)
+                <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
+            @endforeach
+        </select>
+
+        <input type="text" name="nama_uraian" class="form-control mb-2" required>
+
+        <button type="submit" class="btn btn-primary btn-sm px-4 mt-2 rounded-pill shadow-sm">
+            + Tambah
+        </button>
+    </form>
+
+    <!-- ================= SUB URAIAN ================= -->
+    <h5>Sub-Uraian</h5>
+    <form id="formSub" class="mb-3">
+        <select name="uraian_id" class="form-select mb-2" required>
+            <option value="">Pilih Uraian</option>
+            @foreach($kategoris as $k)
+                @foreach($k->uraian as $u)
+                    <option value="{{ $u->id }}">
+                        {{ $k->nama_kategori }} → {{ $u->nama_uraian }}
+                    </option>
+>>>>>>> 7e358a622973d0aa0eaf766dbb0612e263544bcc
                 @endforeach
             @endforeach
         </select>
 
+<<<<<<< HEAD
         <input type="text" name="nama_sub_uraian" class="form-control mb-2">
         <button type="submit" class="btn btn-primary w-100">Tambah</button>
+=======
+        <input type="text" name="nama_sub_uraian" class="form-control mb-2" required>
+
+        <!-- 🔥 BUTTON FIX -->
+        <button type="submit" class="btn btn-primary btn-sm px-4 mt-2 rounded-pill shadow-sm">
+            + Tambah
+        </button>
+>>>>>>> 7e358a622973d0aa0eaf766dbb0612e263544bcc
     </form>
 </div>
 
@@ -175,6 +231,7 @@
         </div>
         @endforeach
 
+<<<<<<< HEAD
         <button type="submit" class="btn btn-success mt-3 w-100">Simpan</button>
 
     </form>
@@ -256,6 +313,13 @@ $(document).ready(function(){
 </html>
 
 
+=======
+           <div class="text-center mt-3">
+    <button type="submit" class="btn btn-success px-5 rounded-pill shadow-sm">
+        💾 Simpan
+    </button>
+</div>
+>>>>>>> 7e358a622973d0aa0eaf766dbb0612e263544bcc
 
     </form>
 </div>
