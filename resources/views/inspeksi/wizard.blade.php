@@ -8,13 +8,6 @@
 
     <!DOCTYPE html>
 
-<html>
-<head>
-    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-    <title>Inspeksi</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
 <style>
     body { overflow-x: hidden; }
 
@@ -62,11 +55,6 @@
 <body>
 
 <div class="sidebar">
-<<<<<<< HEAD
-=======
-    <h4>ASTUTI</h4>
-
->>>>>>> 7e358a622973d0aa0eaf766dbb0612e263544bcc
     <a href="#" onclick="showStep(1)" id="menu1" class="active">Master Data</a>
     <a href="#" onclick="showStep(2)" id="menu2">Form Inspeksi</a>
     <a href="{{ route('inspeksi.dashboard') }}">Dashboard</a>
@@ -78,7 +66,6 @@
 <!-- STEP 1 -->
 <div class="step active" id="step1">
 
-<<<<<<< HEAD
     <h5>Kategori</h5>
     <form id="formKategori">
         <input type="text" name="nama_kategori" class="form-control mb-2" required>
@@ -94,12 +81,20 @@
             @endforeach
         </select>
 
-        <select id="uraian" class="form-select mb-2">
-            <option value="">Pilih Uraian</option>
-        </select>
+       <input type="text" id="inputUraian" class="form-control mb-2" placeholder="Masukkan Uraian">
 
         <button type="submit" class="btn btn-primary w-100">Tambah</button>
     </form>
+    <select id="kategoriSub" class="form-select mb-2">
+    <option value="">Pilih Kategori</option>
+    @foreach($kategoris as $k)
+        <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
+    @endforeach
+</select>
+
+<select name="uraian_id" id="uraianSub" class="form-select mb-2" required>
+    <option value="">Pilih Uraian</option>
+</select>
 
     <h5>Sub Uraian</h5>
     <form id="formSub">
@@ -107,64 +102,14 @@
             @foreach($kategoris as $k)
                 @foreach($k->uraian as $u)
                     <option value="{{ $u->id }}">{{ $u->nama_uraian }}</option>
-=======
-    <!-- ================= STEP 1 ================= -->
-    <div class="step active" id="step1">
-    <h4>Master Data Inspeksi</h4>
-
-    <!-- ================= KATEGORI ================= -->
-    <form id="formKategori" class="mb-3">
-        <input type="text" name="nama_kategori" class="form-control mb-2" required>
-
-        <button type="submit" class="btn btn-primary btn-sm px-4 mt-2 rounded-pill shadow-sm">
-            + Tambah
-        </button>
-    </form>
-
-    <!-- ================= URAIAN ================= -->
-    <form id="formUraian" class="mb-3">
-        <select name="kategori_id" class="form-select mb-2" required>
-            <option value="">Pilih Kategori</option>
-            @foreach($kategoris as $k)
-                <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
-            @endforeach
-        </select>
-
-        <input type="text" name="nama_uraian" class="form-control mb-2" required>
-
-        <button type="submit" class="btn btn-primary btn-sm px-4 mt-2 rounded-pill shadow-sm">
-            + Tambah
-        </button>
-    </form>
-
-    <!-- ================= SUB URAIAN ================= -->
-    <h5>Sub-Uraian</h5>
-    <form id="formSub" class="mb-3">
-        <select name="uraian_id" class="form-select mb-2" required>
-            <option value="">Pilih Uraian</option>
-            @foreach($kategoris as $k)
-                @foreach($k->uraian as $u)
-                    <option value="{{ $u->id }}">
-                        {{ $k->nama_kategori }} → {{ $u->nama_uraian }}
-                    </option>
->>>>>>> 7e358a622973d0aa0eaf766dbb0612e263544bcc
                 @endforeach
             @endforeach
         </select>
-
-<<<<<<< HEAD
-        <input type="text" name="nama_sub_uraian" class="form-control mb-2">
-        <button type="submit" class="btn btn-primary w-100">Tambah</button>
-=======
         <input type="text" name="nama_sub_uraian" class="form-control mb-2" required>
-
-        <!-- 🔥 BUTTON FIX -->
-        <button type="submit" class="btn btn-primary btn-sm px-4 mt-2 rounded-pill shadow-sm">
-            + Tambah
-        </button>
->>>>>>> 7e358a622973d0aa0eaf766dbb0612e263544bcc
+        <button type="submit" class="btn btn-primary w-100">Tambah</button>
     </form>
 </div>
+
 
 <!-- STEP 2 -->
 <div class="step" id="step2">
@@ -208,13 +153,6 @@
             </div>
         </div>
 
-        <select id="filterKategori" class="form-select mb-3">
-            <option value="">Pilih Kategori</option>
-            @foreach($kategoris as $k)
-                <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
-            @endforeach
-        </select>
-
         @foreach($kategoris as $k)
         <div class="kategori-box" id="kategori-{{ $k->id }}" style="display:none;">
             @foreach($k->uraian as $u)
@@ -231,7 +169,6 @@
         </div>
         @endforeach
 
-<<<<<<< HEAD
         <button type="submit" class="btn btn-success mt-3 w-100">Simpan</button>
 
     </form>
@@ -259,6 +196,20 @@ $(document).ready(function(){
         $('#kategori-' + $(this).val()).show();
     });
 
+    $('#kategoriSub').change(function(){
+    let id = $(this).val();
+
+    if(id){
+        $.get('/get-uraian/' + id, function(data){
+            let html = '<option value="">Pilih Uraian</option>';
+            data.forEach(d => {
+                html += `<option value="${d.id}">${d.nama_uraian}</option>`;
+            });
+            $('#uraianSub').html(html);
+        });
+    }
+});
+
     const signaturePadK3rs = new SignaturePad(document.getElementById('signature-pad-k3rs'));
     const signaturePadRuangan = new SignaturePad(document.getElementById('signature-pad-ruangan'));
 
@@ -283,7 +234,7 @@ $(document).ready(function(){
         e.preventDefault();
         $.post('/inspeksi/master/uraian', {
             kategori_id: $('#kategori').val(),
-            nama_uraian: $('#uraian').val()
+            nama_uraian: $('#inputUraian').val()
         }, () => location.reload());
     });
 
@@ -310,21 +261,6 @@ $(document).ready(function(){
 </script>
 
 </body>
-</html>
-
-
-=======
-           <div class="text-center mt-3">
-    <button type="submit" class="btn btn-success px-5 rounded-pill shadow-sm">
-        💾 Simpan
-    </button>
-</div>
->>>>>>> 7e358a622973d0aa0eaf766dbb0612e263544bcc
-
-    </form>
-</div>
-
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 
 <script>
 function showStep(step){
@@ -368,9 +304,6 @@ $('#formInspeksi').on('submit', function(e){
         return;
     }
 
-    // =====================
-    // PARAF
-    // =====================
     if (!signaturePadK3rs.isEmpty()) {
         $('#paraf_k3rs').val(signaturePadK3rs.toDataURL());
     }
@@ -442,7 +375,7 @@ $('#formSub').submit(function(e){
     e.preventDefault();
     $.post('/inspeksi/master/suburaian', $(this).serialize(), () => location.reload());
 });
-<script>
+
 // SIGNATURE K3RS
 const canvasK3rs = document.getElementById('signature-pad-k3rs');
 const signaturePadK3rs = new SignaturePad(canvasK3rs);
@@ -486,68 +419,81 @@ function resizeCanvas(canvas, signaturePad) {
 <script>
 $(document).ready(function(){
 
-    // AUTO TANGGAL
+    window.showStep = function(step){
+        $('.step').removeClass('active');
+        $('#step'+step).addClass('active');
+
+        $('.sidebar a').removeClass('active');
+        $('#menu'+step).addClass('active');
+    }
+
     $('#tanggal').val(new Date().toISOString().split('T')[0]);
 
-    // FILTER KATEGORI
     $('#filterKategori').change(function(){
-        let id = $(this).val();
         $('.kategori-box').hide();
-        if(id !== '') $('#kategori-' + id).show();
+        $('#kategori-' + $(this).val()).show();
     });
 
-    // LOAD URAIAN
-    $('#kategori').on('change', function () {
+    const signaturePadK3rs = new SignaturePad(document.getElementById('signature-pad-k3rs'));
+    const signaturePadRuangan = new SignaturePad(document.getElementById('signature-pad-ruangan'));
 
-        let kategoriId = $(this).val();
+    window.clearK3rs = () => signaturePadK3rs.clear();
+    window.clearRuangan = () => signaturePadRuangan.clear();
 
-        if(kategoriId !== ''){
-            $('#uraian').html('<option>Loading...</option>');
+    $('#formInspeksi').on('submit', function(e){
 
-            $.get('/get-uraian/' + kategoriId, function(data){
+        let valid = true;
 
-                let html = '<option value="">Pilih Uraian</option>';
+        $('.kategori-box:visible input[type=radio]').each(function(){
+            let name = $(this).attr('name');
 
-                data.forEach(function(item){
-                    html += `<option value="${item.nama_uraian}">
-                                ${item.nama_uraian}
-                             </option>`;
-                });
+            if($('input[name="'+name+'"]:checked').length === 0){
+                valid = false;
+            }
+        });
 
-                $('#uraian').html(html);
-            });
-
-        } else {
-            $('#uraian').html('<option value="">Pilih Uraian</option>');
+        if(!valid){
+            alert('Isi semua pertanyaan!');
+            e.preventDefault();
+            return;
         }
 
+        if (!signaturePadK3rs.isEmpty()) {
+            $('#paraf_k3rs').val(signaturePadK3rs.toDataURL());
+        }
+
+        if (!signaturePadRuangan.isEmpty()) {
+            $('#paraf_ruangan').val(signaturePadRuangan.toDataURL());
+        }
+    });
+
+    $.ajaxSetup({
+        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+    });
+
+    $('#formKategori').submit(function(e){
+        e.preventDefault();
+        $.post('/inspeksi/master/kategori', $(this).serialize(), () => location.reload());
+    });
+
+    $('#formSub').submit(function(e){
+        e.preventDefault();
+        $.post('/inspeksi/master/suburaian', $(this).serialize(), () => location.reload());
+    });
+
+    $('#kategori').change(function(){
+        let id = $(this).val();
+
+        if(id){
+            $.get('/get-uraian/' + id, function(data){
+                let html = '<option value="">Pilih Uraian</option>';
+                data.forEach(d => {
+                    html += `<option value="${d.nama_uraian}">${d.nama_uraian}</option>`;
+                });
+                $('#uraian').html(html);
+            });
+        }
     });
 
 });
 </script>
-<script>
-const signaturePadK3rs = new SignaturePad(document.getElementById('signature-pad-k3rs'));
-const signaturePadRuangan = new SignaturePad(document.getElementById('signature-pad-ruangan'));
-
-function clearK3rs() {
-    signaturePadK3rs.clear();
-}
-
-function clearRuangan() {
-    signaturePadRuangan.clear();
-}
-
-$('#formInspeksi').submit(function(){
-
-    if (!signaturePadK3rs.isEmpty()) {
-        $('#paraf_k3rs').val(signaturePadK3rs.toDataURL());
-    }
-
-    if (!signaturePadRuangan.isEmpty()) {
-        $('#paraf_ruangan').val(signaturePadRuangan.toDataURL());
-    }
-
-});
-
-</script>
-</html>

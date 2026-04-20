@@ -171,18 +171,9 @@
 
     <form method="POST" action="{{ route('logout') }}">
         @csrf
-<<<<<<< HEAD
-        <button
-            type="submit"
-            class="btn btn-danger w-100 mt-2"
-        >
-            🚪 Logout
-        </button>
-=======
         <button class="btn btn-light text-primary rounded-pill px-4 shadow-sm">
     Logout
 </button>
->>>>>>> 7e358a622973d0aa0eaf766dbb0612e263544bcc
     </form>
 </div>
 
@@ -196,8 +187,7 @@
 <<<<<<< HEAD
 
 <!-- ================= DASHBOARD ================= -->
-=======
->>>>>>> 7e358a622973d0aa0eaf766dbb0612e263544bcc
+
 <div id="dashboard-box">
 
     <div class="row">
