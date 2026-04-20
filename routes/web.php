@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InspeksiController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\UraianController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +15,7 @@ use App\Http\Controllers\Auth\LoginController;
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/get-uraian/{id}', [InspeksiController::class, 'getUraian']);
+Route::post('/uraian', [UraianController::class, 'store'])->name('uraian.store');
 
 
 // 🔒 Halaman login (hanya untuk guest / belum login)

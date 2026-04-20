@@ -7,7 +7,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-
     :root {
         --primary: #0075f2;
         --success: #16a34a;
@@ -76,8 +75,8 @@
         }
 
         /* CONTENT */
-        .content { 
-            padding: 20px; 
+        .content {
+            padding: 20px;
         }
 
         /* CARD */
@@ -86,13 +85,11 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
 
-
     .sidebar a.active {
         background: var(--primary);
         color: white !important;
         font-weight: bold;
     }
-
 
     /* CARD */
     .card-summary {
@@ -141,7 +138,7 @@
 <div class="container-fluid">
 <div class="row">
 
-<!-- ================= SIDEBAR ================= -->
+
 <div class="col-md-2 sidebar">
     <h5>📋 Menu</h5>
 
