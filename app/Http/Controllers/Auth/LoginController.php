@@ -8,57 +8,65 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
-
 class LoginController extends Controller
 {
     /**
-     * 🔥 LOGIN NIP (AUTO REGISTER)
+     * ================= LOGIN =================
      */
     public function login(Request $request)
     {
-        // ✅ Validasi input
+        // ✅ VALIDASI
         $request->validate([
             'nip' => ['required', 'string'],
-            'password' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:4'],
         ]);
 
-        $nip = $request->nip;
-        $password = $request->password;
+        // 🔍 CEK USER
+        $user = User::where('nip', $request->nip)->first();
 
-        // 🔍 Cek user berdasarkan NIP
-        $user = User::where('nip', $nip)->first();
+        // 🔥 AUTO REGISTER (OPSIONAL)
+        if (!$user) {
+            $user = User::create([
+                'name' => 'User ' . $request->nip,
+                'nip' => $request->nip,
+                'password' => Hash::make($request->password),
+            ]);
 
-$user = User::where('nip', $request->nip)->first();
+            Auth::login($user);
+            $request->session()->regenerate();
 
-// ❌ jika user tidak ada ATAU password salah
-if (!$user || !Hash::check($request->password, $user->password)) {
-    return back()->withErrors([
-        'login' => 'Wrong account or password'
-    ])->withInput();
-}
+            return redirect()->route('inspeksi.dashboard')
+                ->with('success', 'User baru berhasil dibuat');
+        }
 
+        // 🔐 LOGIN (PAKAI ATTEMPT)
+        if (Auth::attempt([
+            'nip' => $request->nip,
+            'password' => $request->password
+        ])) {
+            $request->session()->regenerate();
 
-        // 🔑 Login user
-        Auth::login($user);
+            return redirect()->route('inspeksi.dashboard')
+                ->with('success', 'Login berhasil');
+        }
 
-        // 🔄 Regenerate session (WAJIB)
-        $request->session()->regenerate();
-
-        // ✅ FIX: redirect ke route yang benar
-        return redirect()->route('inspeksi.dashboard');
+        // ❌ GAGAL LOGIN
+        return back()->withErrors([
+            'login' => 'NIP atau password salah'
+        ])->withInput();
     }
 
     /**
-     * 🔥 LOGOUT
+     * ================= LOGOUT =================
      */
     public function logout(Request $request)
     {
         Auth::logout();
 
-        // 🔐 Hapus session
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('login')
+            ->with('success', 'Berhasil logout');
     }
 }

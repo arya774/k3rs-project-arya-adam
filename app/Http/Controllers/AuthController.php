@@ -23,6 +23,7 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
+        // cari user berdasarkan NIP
         $user = User::where('nip', $request->nip)->first();
 
         // 🔥 JIKA USER BELUM ADA → AUTO REGISTER
@@ -30,23 +31,34 @@ class AuthController extends Controller
             $user = User::create([
                 'name' => 'User ' . $request->nip,
                 'nip' => $request->nip,
-                'password' => Hash::make($request->password)
+                'password' => bcrypt($request->password)
             ]);
-        }
 
-        // 🔥 CEK PASSWORD
-        if (Hash::check($request->password, $user->password)) {
             Auth::login($user);
             return redirect()->route('inspeksi.dashboard');
         }
 
-        return back()->with('error', 'Password salah');
+        // 🔐 LOGIN NORMAL (PAKAI AUTH::ATTEMPT)
+        if (Auth::attempt([
+            'nip' => $request->nip,
+            'password' => $request->password
+        ])) {
+            $request->session()->regenerate(); // keamanan session
+            return redirect()->route('inspeksi.dashboard');
+        }
+
+        // ❌ PASSWORD SALAH
+        return back()->with('error', 'Password salah')->withInput();
     }
 
     // LOGOUT
-    public function logout()
+    public function logout(Request $request)
     {
         Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect('/');
     }
 }

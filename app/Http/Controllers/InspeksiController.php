@@ -17,7 +17,7 @@ use Maatwebsite\Excel\Facades\Excel;
 class InspeksiController extends Controller
 {
     // ============================
-    // WIZARD
+    // WIZARD (AUTO REFRESH DATA)
     // ============================
     public function wizard()
     {
@@ -29,7 +29,7 @@ class InspeksiController extends Controller
     }
 
     // ============================
-    // MASTER DATA
+    // MASTER DATA (FIX RETURN + AUTO RELOAD SUPPORT)
     // ============================
     public function storeMasterData(Request $request, $type)
     {
@@ -74,7 +74,8 @@ class InspeksiController extends Controller
             }
 
             return response()->json([
-                'success' => 'Data berhasil ditambahkan',
+                'success' => true,
+                'message' => 'Data berhasil ditambahkan',
                 'data' => $data
             ]);
 
@@ -90,9 +91,6 @@ class InspeksiController extends Controller
     // ============================
     public function storeInspeksi(Request $request)
     {
-        // 🔥 DEBUG (hapus nanti kalau sudah jalan)
-        // dd($request->all());
-
         $request->validate([
             'tanggal' => 'required|date',
             'ruangan' => 'required|string',
@@ -100,12 +98,10 @@ class InspeksiController extends Controller
             'nama_petugas_ruangan' => 'required|string',
         ]);
 
-        // =====================
-        // PARAF
-        // =====================
         $parafK3rsFile = null;
         $parafRuanganFile = null;
 
+        // PARAF K3RS
         if ($request->paraf_petugas_k3rs) {
             $image = str_replace('data:image/png;base64,', '', $request->paraf_petugas_k3rs);
             $image = str_replace(' ', '+', $image);
@@ -114,6 +110,7 @@ class InspeksiController extends Controller
             Storage::disk('public')->put('paraf/' . $parafK3rsFile, base64_decode($image));
         }
 
+        // PARAF RUANGAN
         if ($request->paraf_petugas_ruangan) {
             $image = str_replace('data:image/png;base64,', '', $request->paraf_petugas_ruangan);
             $image = str_replace(' ', '+', $image);
@@ -122,9 +119,6 @@ class InspeksiController extends Controller
             Storage::disk('public')->put('paraf/' . $parafRuanganFile, base64_decode($image));
         }
 
-        // =====================
-        // SIMPAN DB
-        // =====================
         $inspeksi = DB::transaction(function () use ($request, $parafK3rsFile, $parafRuanganFile) {
 
             $inspeksi = Inspeksi::create([
@@ -136,12 +130,11 @@ class InspeksiController extends Controller
                 'paraf_petugas_ruangan' => $parafRuanganFile,
             ]);
 
-            // 🔥 FIX: CEK NILAI ADA ATAU TIDAK
+            // FIX NILAI
             if ($request->has('nilai')) {
-
                 foreach ($request->nilai as $subId => $nilai) {
 
-                    if (!$nilai) continue;
+                    if ($nilai === null || $nilai === '') continue;
 
                     DetailInspeksi::create([
                         'inspeksi_id' => $inspeksi->id,
@@ -210,13 +203,7 @@ class InspeksiController extends Controller
             'persentase'
         ))->setPaper('A4', 'portrait');
 
-        $fileName = 'inspeksi-' . $id . '.pdf';
-
-        $path = storage_path('app/public/' . $fileName);
-
-        $pdf->save($path);
-
-        return response()->download($path, $fileName);
+        return $pdf->download('inspeksi-'.$id.'.pdf');
     }
 
     // ============================
@@ -232,9 +219,7 @@ class InspeksiController extends Controller
     // ============================
     public function dashboard()
     {
-        $inspeksi = Inspeksi::with([
-            'detailInspeksi.subUraian.uraian.kategori'
-        ])->latest()->first();
+        $inspeksi = Inspeksi::latest()->first();
 
         $detail = $inspeksi ? $inspeksi->detailInspeksi : collect();
 
