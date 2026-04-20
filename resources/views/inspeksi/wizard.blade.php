@@ -92,10 +92,6 @@
     @endforeach
 </select>
 
-<select name="uraian_id" id="uraianSub" class="form-select mb-2" required>
-    <option value="">Pilih Uraian</option>
-</select>
-
     <h5>Sub Uraian</h5>
     <form id="formSub">
         <select name="uraian_id" class="form-select mb-2">
@@ -140,6 +136,8 @@
                 <input type="hidden" name="paraf_petugas_k3rs" id="paraf_k3rs">
 
                 <button type="button" class="btn btn-danger btn-sm mt-2" onclick="clearK3rs()">Hapus</button>
+
+                <button type="button" onclick="tambahUraian()">Tambah</button>
 
                 <hr>
 
@@ -196,19 +194,6 @@ $(document).ready(function(){
         $('#kategori-' + $(this).val()).show();
     });
 
-    $('#kategoriSub').change(function(){
-    let id = $(this).val();
-
-    if(id){
-        $.get('/get-uraian/' + id, function(data){
-            let html = '<option value="">Pilih Uraian</option>';
-            data.forEach(d => {
-                html += `<option value="${d.id}">${d.nama_uraian}</option>`;
-            });
-            $('#uraianSub').html(html);
-        });
-    }
-});
 
     const signaturePadK3rs = new SignaturePad(document.getElementById('signature-pad-k3rs'));
     const signaturePadRuangan = new SignaturePad(document.getElementById('signature-pad-ruangan'));
@@ -230,31 +215,9 @@ $(document).ready(function(){
         $.post('/inspeksi/master/kategori', $(this).serialize(), () => location.reload());
     });
 
-    $('#formUraian').submit(function(e){
-        e.preventDefault();
-        $.post('/inspeksi/master/uraian', {
-            kategori_id: $('#kategori').val(),
-            nama_uraian: $('#inputUraian').val()
-        }, () => location.reload());
-    });
-
     $('#formSub').submit(function(e){
         e.preventDefault();
         $.post('/inspeksi/master/suburaian', $(this).serialize(), () => location.reload());
-    });
-
-    $('#kategori').change(function(){
-        let id = $(this).val();
-
-        if(id){
-            $.get('/get-uraian/' + id, function(data){
-                let html = '<option value="">Pilih Uraian</option>';
-                data.forEach(d => {
-                    html += `<option value="${d.nama_uraian}">${d.nama_uraian}</option>`;
-                });
-                $('#uraian').html(html);
-            });
-        }
     });
 
 });
@@ -343,15 +306,50 @@ $('#formUraian').submit(function(e){
     e.preventDefault();
 
     let kategori = $('#kategori').val();
-    let uraian = $('#uraian').val();
-
-    console.log('Kategori:', kategori);
-    console.log('Uraian:', uraian);
+    let uraian = $('#inputUraian').val();
 
     if(kategori === '' || uraian === ''){
         alert('Kategori dan Uraian harus diisi!');
         return;
     }
+
+    $.ajax({
+        url: '/inspeksi/master/uraian',
+        type: 'POST',
+        data: {
+            kategori_id: kategori,
+            nama_uraian: uraian,
+            _token: $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(){
+            alert('Data berhasil disimpan');
+
+            // 🔥 LANGSUNG UPDATE DROPDOWN TANPA RELOAD
+            $('#kategoriSub').trigger('change');
+
+            // kosongkan input
+            $('#inputUraian').val('');
+        },
+        error: function(err){
+            console.log(err);
+            alert('Gagal simpan');
+        }
+    });
+});
+    <!-- PILIH KATEGORI -->
+    <select name="kategori_id" required>
+        <option value="">Pilih Kategori</option>
+        @foreach($kategoris as $k)
+            <option value="{{ $k->id }}">{{ $k->nama }}</option>
+        @endforeach
+    </select>
+
+    <!-- INPUT URAIAN -->
+    <input type="text" name="uraian" placeholder="Masukkan Uraian" required>
+
+    <!-- TOMBOL -->
+    <button type="submit">Tambah</button>
+</form>
 
     $.ajax({
         url: '/inspeksi/master/uraian',
@@ -370,7 +368,6 @@ $('#formUraian').submit(function(e){
             alert('Gagal simpan, cek console');
         }
     });
-});
 $('#formSub').submit(function(e){
     e.preventDefault();
     $.post('/inspeksi/master/suburaian', $(this).serialize(), () => location.reload());
@@ -479,20 +476,6 @@ $(document).ready(function(){
     $('#formSub').submit(function(e){
         e.preventDefault();
         $.post('/inspeksi/master/suburaian', $(this).serialize(), () => location.reload());
-    });
-
-    $('#kategori').change(function(){
-        let id = $(this).val();
-
-        if(id){
-            $.get('/get-uraian/' + id, function(data){
-                let html = '<option value="">Pilih Uraian</option>';
-                data.forEach(d => {
-                    html += `<option value="${d.nama_uraian}">${d.nama_uraian}</option>`;
-                });
-                $('#uraian').html(html);
-            });
-        }
     });
 
 });

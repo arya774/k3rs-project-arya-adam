@@ -14,6 +14,9 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Exports\InspeksiExport;
 use Maatwebsite\Excel\Facades\Excel;
 
+
+
+
 class InspeksiController extends Controller
 {
     // ============================
@@ -28,6 +31,8 @@ class InspeksiController extends Controller
         return view('inspeksi.wizard', compact('kategoris'));
     }
 
+
+    
     public function getUraian($id)
 {
     return \App\Models\Uraian::where('kategori_id', $id)->get();

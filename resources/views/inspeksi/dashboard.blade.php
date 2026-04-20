@@ -7,7 +7,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-<<<<<<< HEAD
     :root {
         --primary: #0075f2;
         --success: #16a34a;
@@ -47,9 +46,9 @@
     .sidebar a:hover {
         background: #334155;
     }
-=======
-        body { 
-            background: #f4f6f9; 
+
+        body {
+            background: #f4f6f9;
             font-family: 'Segoe UI', sans-serif;
         }
 
@@ -76,8 +75,8 @@
         }
 
         /* CONTENT */
-        .content { 
-            padding: 20px; 
+        .content {
+            padding: 20px;
         }
 
         /* CARD */
@@ -85,7 +84,6 @@
             border-radius: 10px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
->>>>>>> 7e358a622973d0aa0eaf766dbb0612e263544bcc
 
     .sidebar a.active {
         background: var(--primary);
@@ -93,18 +91,15 @@
         font-weight: bold;
     }
 
-<<<<<<< HEAD
     /* CARD */
     .card-summary {
         border-radius: 12px;
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         border: none;
     }
-=======
         .card {
             border-radius: 10px;
         }
->>>>>>> 7e358a622973d0aa0eaf766dbb0612e263544bcc
 
     .bg-primary {
         background: var(--primary) !important;
@@ -143,7 +138,7 @@
 <div class="container-fluid">
 <div class="row">
 
-<!-- ================= SIDEBAR ================= -->
+
 <div class="col-md-2 sidebar">
     <h5>📋 Menu</h5>
 
@@ -183,8 +178,6 @@
 <h3 class="mb-3">Dashboard Inspeksi</h3>
 
 @if($inspeksi)
-
-<<<<<<< HEAD
 
 <!-- ================= DASHBOARD ================= -->
 
