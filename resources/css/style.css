@@ -1,3 +1,50 @@
+/* SIDEBAR */
+.sidebar {
+    width: 220px;
+    height: 100vh;
+    background: linear-gradient(180deg, #1e88e5, #1565c0);
+    color: white;
+    padding-top: 10px;
+    position: fixed;
+}
+
+/* LOGO */
+.logo-sidebar {
+    text-align: center;
+    padding: 20px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+.logo-img {
+    width: 80px;
+    background: white;
+    border-radius: 50%;
+    padding: 5px;
+}
+
+.logo-text {
+    margin-top: 8px;
+    font-size: 13px;
+}
+
+/* MENU */
+.sidebar a {
+    display: block;
+    padding: 10px 20px;
+    color: white;
+    text-decoration: none;
+}
+
+.sidebar a:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* CONTENT */
+.main-content {
+    margin-left: 220px;
+    width: 100%;
+}
+
 /* RESET */
 * {
     margin: 0;
@@ -229,5 +276,10 @@ body {
     padding: 25px;
     box-shadow: 0 5px 20px rgba(0,0,0,0.05);
 }
-
-
+.logo-img {
+    width: 70px;
+    background: white;
+    border-radius: 50%;
+    padding: 5px;
+}
+<h1 style="color:red">TES NAVIGATION</h1>
