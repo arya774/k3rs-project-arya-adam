@@ -47,7 +47,7 @@
     .sidebar a:hover {
         background: #334155;
     }
-=======
+
         body { 
             background: #f4f6f9; 
             font-family: 'Segoe UI', sans-serif;
@@ -100,7 +100,6 @@
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         border: none;
     }
-=======
         .card {
             border-radius: 10px;
         }
@@ -183,7 +182,7 @@
 
 @if($inspeksi)
 
-<<<<<<< HEAD
+
 
 <!-- ================= DASHBOARD ================= -->
 
