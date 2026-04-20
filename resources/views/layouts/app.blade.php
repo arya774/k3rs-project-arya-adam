@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
+
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
@@ -25,6 +25,45 @@
         </div>
     </nav>
 
+    <body>
+
+<div class="d-flex">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+        <!-- LOGO -->
+        <div class="logo-sidebar">
+            <img src="{{ asset('images/logo_rsud.png') }}" class="logo-img">
+            <div class="logo-text">RSUD Kota Bogor</div>
+        </div>
+
+        <!-- MENU -->
+        <a href="#">Dashboard</a>
+        <a href="{{ route('inspeksi.create') }}">Form Inspeksi</a>
+        <a href="{{ route('kategori.index') }}">Kategori</a>
+
+    </div>
+
+    <!-- CONTENT -->
+    <div class="main-content">
+
+        <!-- NAVBAR -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Inspeksi</a>
+            </div>
+        </nav>
+
+        <div class="container-fluid">
+            @yield('content')
+        </div>
+
+    </div>
+
+</div>
+
+</body>
     <div class="container">
         @if(session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>

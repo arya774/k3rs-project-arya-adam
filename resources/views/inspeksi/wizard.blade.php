@@ -91,13 +91,19 @@
 
     <h5>Sub Uraian</h5>
     <form id="formSub">
-        <select name="uraian_id" class="form-select mb-2">
-            @foreach($kategoris as $k)
-                @foreach($k->uraian as $u)
-                    <option value="{{ $u->id }}">{{ $u->nama_uraian }}</option>
-                @endforeach
+       <select name="uraian_id" class="form-select mb-2">
+    <option value="">-- Pilih Uraian --</option>
+
+    @foreach($kategoris as $k)
+        <optgroup label="{{ $k->nama_kategori }}">
+           @foreach($k->uraian as $u)
+                <option value="{{ $u->id }}">
+                    {{ $u->nama_uraian }}
+                </option>
             @endforeach
-        </select>
+        </optgroup>
+    @endforeach
+</select>
         <input type="text" name="nama_sub_uraian" class="form-control mb-2" required>
         <button type="submit" class="btn btn-primary w-100">Tambah</button>
     </form>
@@ -135,7 +141,7 @@
 
                 <button type="button" class="btn btn-danger btn-sm mt-2" onclick="clearK3rs()">Hapus</button>
 
-                <button type="button" onclick="tambahUraian()">Tambah</button>
+
 
                 <hr>
 
@@ -211,49 +217,137 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 
 <script>
-$(document).ready(function(){
+$(document).ready(function () {
 
-    window.showStep = function(step){
+    // =====================
+    // STEP NAVIGATION
+    // =====================
+    window.showStep = function (step) {
         $('.step').removeClass('active');
-        $('#step'+step).addClass('active');
+        $('#step' + step).addClass('active');
 
         $('.sidebar a').removeClass('active');
-        $('#menu'+step).addClass('active');
-    }
+        $('#menu' + step).addClass('active');
+    };
 
+    // =====================
+    // AUTO TANGGAL
+    // =====================
     $('#tanggal').val(new Date().toISOString().split('T')[0]);
 
-    $('#filterKategori').change(function(){
+    // =====================
+    // FILTER KATEGORI
+    // =====================
+    $('#filterKategori').on('change', function () {
         $('.kategori-box').hide();
-        $('#kategori-' + $(this).val()).show();
+        let id = $(this).val();
+        if (id) $('#kategori-' + id).show();
     });
 
+    // =====================
+    // SIGNATURE PAD SAFE INIT
+    // =====================
+    let signaturePadK3rs = null;
+    let signaturePadRuangan = null;
 
-    const signaturePadK3rs = new SignaturePad(document.getElementById('signature-pad-k3rs'));
-    const signaturePadRuangan = new SignaturePad(document.getElementById('signature-pad-ruangan'));
+    if (document.getElementById('signature-pad-k3rs')) {
+        signaturePadK3rs = new SignaturePad(document.getElementById('signature-pad-k3rs'));
+    }
 
-    window.clearK3rs = () => signaturePadK3rs.clear();
-    window.clearRuangan = () => signaturePadRuangan.clear();
+    if (document.getElementById('signature-pad-ruangan')) {
+        signaturePadRuangan = new SignaturePad(document.getElementById('signature-pad-ruangan'));
+    }
 
-    $('#formInspeksi').submit(function(){
-        if (!signaturePadK3rs.isEmpty()) $('#paraf_k3rs').val(signaturePadK3rs.toDataURL());
-        if (!signaturePadRuangan.isEmpty()) $('#paraf_ruangan').val(signaturePadRuangan.toDataURL());
-    });
+    window.clearK3rs = () => signaturePadK3rs?.clear();
+    window.clearRuangan = () => signaturePadRuangan?.clear();
 
+    // =====================
+    // AJAX SETUP CSRF
+    // =====================
     $.ajaxSetup({
-        headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
     });
 
-    $('#formKategori').submit(function(e){
+    // =====================
+    // KATEGORI
+    // =====================
+    $('#formKategori').on('submit', function (e) {
         e.preventDefault();
-        $.post('/inspeksi/master/kategori', $(this).serialize(), () => location.reload());
+
+        $.post('/inspeksi/master/kategori', $(this).serialize())
+            .done(() => location.reload())
+            .fail(() => alert('Gagal tambah kategori'));
     });
 
-    $('#formSub').submit(function(e){
+    // =====================
+    // URAIAN
+    // =====================
+    $('#formUraian').on('submit', function (e) {
         e.preventDefault();
-        $.post('/inspeksi/master/suburaian', $(this).serialize(), () => location.reload());
+
+        let kategori = $('#kategori').val();
+        let uraian = $('#inputUraian').val();
+
+        if (!kategori || !uraian) {
+            alert('Kategori dan Uraian wajib diisi');
+            return;
+        }
+
+        $.post('/inspeksi/master/uraian', {
+            kategori_id: kategori,
+            nama_uraian: uraian
+        })
+        .done(() => location.reload())
+        .fail(() => alert('Gagal simpan uraian'));
+    });
+
+    // =====================
+    // SUB URAIAN (FIX UTAMA KAMU)
+    // =====================
+    $('#formSub').on('submit', function (e) {
+        e.preventDefault();
+
+        $.post('/inspeksi/master/suburaian', $(this).serialize())
+            .done(() => {
+                alert('Sub Uraian berhasil ditambahkan');
+                location.reload();
+            })
+            .fail(() => alert('Gagal simpan sub uraian'));
+    });
+
+    // =====================
+    // FORM INSPEKSI VALIDASI + SIGNATURE
+    // =====================
+    $('#formInspeksi').on('submit', function (e) {
+
+        let valid = true;
+
+        $('.kategori-box:visible input[type=radio]').each(function () {
+            let name = $(this).attr('name');
+
+            if (!$('input[name="' + name + '"]:checked').length) {
+                valid = false;
+            }
+        });
+
+        if (!valid) {
+            alert('Isi semua pertanyaan pada kategori yang dipilih!');
+            e.preventDefault();
+            return;
+        }
+
+        if (signaturePadK3rs && !signaturePadK3rs.isEmpty()) {
+            $('#paraf_k3rs').val(signaturePadK3rs.toDataURL());
+        }
+
+        if (signaturePadRuangan && !signaturePadRuangan.isEmpty()) {
+            $('#paraf_ruangan').val(signaturePadRuangan.toDataURL());
+        }
     });
 
 });
@@ -452,6 +546,7 @@ function resizeCanvas(canvas, signaturePad) {
 <script>
 $(document).ready(function(){
 
+    // STEP
     window.showStep = function(step){
         $('.step').removeClass('active');
         $('#step'+step).addClass('active');
@@ -460,19 +555,23 @@ $(document).ready(function(){
         $('#menu'+step).addClass('active');
     }
 
+    // AUTO TANGGAL
     $('#tanggal').val(new Date().toISOString().split('T')[0]);
 
+    // FILTER KATEGORI
     $('#filterKategori').change(function(){
         $('.kategori-box').hide();
         $('#kategori-' + $(this).val()).show();
     });
 
+    // SIGNATURE
     const signaturePadK3rs = new SignaturePad(document.getElementById('signature-pad-k3rs'));
     const signaturePadRuangan = new SignaturePad(document.getElementById('signature-pad-ruangan'));
 
     window.clearK3rs = () => signaturePadK3rs.clear();
     window.clearRuangan = () => signaturePadRuangan.clear();
 
+    // SUBMIT INSPEKSI
     $('#formInspeksi').on('submit', function(e){
 
         let valid = true;
@@ -500,18 +599,43 @@ $(document).ready(function(){
         }
     });
 
+    // CSRF
     $.ajaxSetup({
         headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
     });
 
+    // KATEGORI
     $('#formKategori').submit(function(e){
         e.preventDefault();
         $.post('/inspeksi/master/kategori', $(this).serialize(), () => location.reload());
     });
 
+    // URAIAN
+    $('#formUraian').submit(function(e){
+        e.preventDefault();
+
+        let kategori = $('#kategori').val();
+        let uraian = $('#inputUraian').val();
+
+        if(kategori === '' || uraian === ''){
+            alert('Kategori dan Uraian harus diisi!');
+            return;
+        }
+
+        $.post('/inspeksi/master/uraian', {
+            kategori_id: kategori,
+            nama_uraian: uraian
+        }, () => location.reload());
+    });
+
+    // SUB URAIAN (INI YANG KAMU BUTUHKAN)
     $('#formSub').submit(function(e){
         e.preventDefault();
-        $.post('/inspeksi/master/suburaian', $(this).serialize(), () => location.reload());
+
+        $.post('/inspeksi/master/suburaian', $(this).serialize(), function(){
+            alert('Sub Uraian berhasil ditambahkan');
+            location.reload();
+        });
     });
 
 });

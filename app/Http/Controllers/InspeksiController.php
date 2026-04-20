@@ -30,8 +30,6 @@ class InspeksiController extends Controller
 
         return view('inspeksi.wizard', compact('kategoris'));
     }
-
-
     
     public function getUraian($id)
 {
