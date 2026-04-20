@@ -85,16 +85,7 @@
 
         <button type="submit" class="btn btn-primary w-100">Tambah</button>
     </form>
-    <select id="kategoriSub" class="form-select mb-2">
-    <option value="">Pilih Kategori</option>
-    @foreach($kategoris as $k)
-        <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
-    @endforeach
-</select>
-
-<select name="uraian_id" id="uraianSub" class="form-select mb-2" required>
-    <option value="">Pilih Uraian</option>
-</select>
+   
 
     <h5>Sub Uraian</h5>
     <form id="formSub">
@@ -129,6 +120,7 @@
             </div>
         </div>
 
+        <!-- ✅ DATA PETUGAS -->
         <div class="card mt-3 mb-3">
             <div class="card-header bg-success text-white">Data Petugas</div>
             <div class="card-body">
@@ -153,19 +145,57 @@
             </div>
         </div>
 
+        <!-- 🔥 PINDAH KE SINI -->
+        <div class="mb-3">
+            <label>Pilih Kategori Inspeksi</label>
+            <select id="filterKategori" class="form-control">
+                <option value="">-- Pilih Kategori --</option>
+                @foreach($kategoris as $k)
+                    <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <!-- 🔥 FORM DINAMIS -->
         @foreach($kategoris as $k)
         <div class="kategori-box" id="kategori-{{ $k->id }}" style="display:none;">
-            @foreach($k->uraian as $u)
-                <b>{{ $u->nama_uraian }}</b>
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    {{ $k->nama_kategori }}
+                </div>
+                <div class="card-body">
 
-                @foreach($u->subUraian as $s)
-                    <div class="mb-2">
-                        {{ $s->nama_sub_uraian }}
-                        <input type="radio" name="nilai[{{ $s->id }}]" value="ya"> Ya
-                        <input type="radio" name="nilai[{{ $s->id }}]" value="tidak"> Tidak
-                    </div>
-                @endforeach
-            @endforeach
+                    @foreach($k->uraian as $u)
+                        <b>{{ $u->nama_uraian }}</b>
+
+                        @foreach($u->subUraian as $s)
+                            <div class="mb-2">
+                                {{ $s->nama_sub_uraian }} <br>
+
+                                <label>
+                                    <input type="radio" name="nilai[{{ $s->id }}]" value="ya"> Ya
+                                </label>
+
+                                <label>
+                                    <input type="radio" name="nilai[{{ $s->id }}]" value="tidak"> Tidak
+                                </label>
+                            </div>
+                            <div class="mb-3">
+    <label>Catatan Umum :</label>
+    <textarea 
+    name="catatan[{{ $s->id }}]" 
+    class="form-control mt-1"
+    rows="2"
+    placeholder="Catatan...">
+</textarea>
+</div>
+                        @endforeach
+
+                        <hr>
+                    @endforeach
+
+                </div>
+            </div>
         </div>
         @endforeach
 

@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-<<<<<<< HEAD
+
     :root {
         --primary: #0075f2;
         --success: #16a34a;
@@ -85,7 +85,7 @@
             border-radius: 10px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
->>>>>>> 7e358a622973d0aa0eaf766dbb0612e263544bcc
+
 
     .sidebar a.active {
         background: var(--primary);
@@ -93,7 +93,7 @@
         font-weight: bold;
     }
 
-<<<<<<< HEAD
+
     /* CARD */
     .card-summary {
         border-radius: 12px;
@@ -104,7 +104,6 @@
         .card {
             border-radius: 10px;
         }
->>>>>>> 7e358a622973d0aa0eaf766dbb0612e263544bcc
 
     .bg-primary {
         background: var(--primary) !important;
