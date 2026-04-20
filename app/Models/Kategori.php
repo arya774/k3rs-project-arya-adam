@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Uraian;
+use App\Models\SubUraian;
 
 /**
  * @property int $id
@@ -28,24 +30,31 @@ class Kategori extends Model
     use HasFactory;
 
     protected $table = 'kategori';
-    protected $fillable = ['nama_kategori'];
 
-    // Relasi ke Uraian (1 kategori bisa punya banyak uraian)
+    protected $fillable = [
+        'nama_kategori'
+    ];
+
+    /**
+     * Kategori -> Uraian
+     */
     public function uraian()
     {
         return $this->hasMany(Uraian::class, 'kategori_id', 'id');
     }
 
-    // Relasi ke SubUraian melalui Uraian
+    /**
+     * Kategori -> SubUraian (via Uraian)
+     */
     public function subUraian()
     {
         return $this->hasManyThrough(
-            SubUraian::class, // Model akhir
-            Uraian::class,    // Model perantara
-            'kategori_id',    // FK di tabel uraian
-            'uraian_id',      // FK di tabel sub_uraian
-            'id',             // PK kategori
-            'id'              // PK uraian
+            SubUraian::class,
+            Uraian::class,
+            'kategori_id', // FK di uraian
+            'uraian_id',   // FK di sub_uraian
+            'id',          // PK kategori
+            'id'           // PK uraian
         );
     }
 }

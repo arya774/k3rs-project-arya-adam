@@ -1,0 +1,233 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* BACKGROUND */
+body {
+    height: 100vh;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* CARD LOGIN */
+.login-container {
+    background: #ffffff;
+    padding: 40px;
+    width: 350px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+/* TITLE */
+.login-container h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* INPUT */
+.input-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.input-group label {
+    font-size: 14px;
+    color: #555;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: 0.3s;
+}
+
+.input-group input:focus {
+    border-color: #4facfe;
+}
+
+/* BUTTON */
+.btn-login {
+    width: 100%;
+    padding: 10px;
+    background: #4facfe;
+    border: none;
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-login:hover {
+    background: #00c6ff;
+}
+
+/* REMEMBER */
+.remember {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 13px;
+}
+
+.remember input {
+    margin-right: 5px;
+}
+/* ERROR TEXT */
+.error-text {
+    color: red;
+    font-size: 13px;
+    margin-top: 5px;
+    animation: fadeIn 0.5s ease;
+}
+
+/* INPUT ERROR */
+.input-error {
+    border: 2px solid red !important;
+    animation: shake 0.3s;
+}
+
+/* SHAKE ANIMATION */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+/* FADE IN */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* ERROR TEXT */
+.error-text {
+    color: red;
+    font-size: 13px;
+    margin-top: 5px;
+    animation: fadeIn 0.5s ease;
+}
+
+/* INPUT ERROR */
+.input-error {
+    border: 2px solid red !important;
+    animation: shake 0.3s;
+}
+
+/* SHAKE ANIMATION */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+/* FADE IN */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+}
+
+/* Sidebar */
+.sidebar {
+    background: #1e293b;
+    color: white;
+    height: 100vh;
+    border-radius: 0 20px 20px 0;
+    padding: 20px;
+}
+
+.sidebar a {
+    color: #cbd5f5;
+    display: block;
+    padding: 10px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.sidebar a:hover {
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+/* Card Dashboard */
+.card-custom {
+    border: none;
+    border-radius: 20px;
+    padding: 20px;
+    color: white;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.card-custom:hover {
+    transform: translateY(-5px);
+}
+
+/* Warna Card */
+.bg-blue {
+    background: linear-gradient(135deg, #3b82f6, #6366f1);
+}
+
+.bg-green {
+    background: linear-gradient(135deg, #22c55e, #4ade80);
+}
+
+.bg-red {
+    background: linear-gradient(135deg, #ef4444, #f87171);
+}
+
+.bg-yellow {
+    background: linear-gradient(135deg, #facc15, #fbbf24);
+}
+
+/* Button */
+.btn-custom {
+    border-radius: 10px;
+    padding: 8px 15px;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.btn-custom:hover {
+    transform: scale(1.05);
+}
+
+/* Container putih */
+.content-box {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+
+
