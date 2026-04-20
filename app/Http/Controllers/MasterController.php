@@ -13,8 +13,8 @@ class MasterController extends Controller
     {
         return view('master.index', [
             'kategori' => Kategori::all(),
-            'uraian' => Uraian::all(),
-            'suburaian' => SubUraian::all(),
+            'uraian' => Uraian::with('kategori')->get(),
+            'suburaian' => SubUraian::with('uraian')->get(),
         ]);
     }
 
@@ -23,59 +23,134 @@ class MasterController extends Controller
         return view('master.form', compact('type'));
     }
 
+    // =========================
+    // STORE (FIX RELASI TOTAL)
+    // =========================
     public function store(Request $request, $type)
     {
-        $request->validate(['nama'=>'required|string|max:255']);
+        switch ($type) {
 
-        switch($type) {
-            case 'kategori': Kategori::create($request->only('nama')); break;
-            case 'uraian': Uraian::create($request->only('nama')); break;
-            case 'suburaian': SubUraian::create($request->only('nama')); break;
-            default: abort(404);
+            case 'kategori':
+                $request->validate([
+                    'nama_kategori' => 'required|string|max:255'
+                ]);
+
+                Kategori::create([
+                    'nama_kategori' => $request->nama_kategori
+                ]);
+                break;
+
+            case 'uraian':
+                $request->validate([
+                    'kategori_id' => 'required|exists:kategori,id',
+                    'nama_uraian' => 'required|string|max:255'
+                ]);
+
+                Uraian::create([
+                    'kategori_id' => $request->kategori_id,
+                    'nama_uraian' => $request->nama_uraian
+                ]);
+                break;
+
+            case 'suburaian':
+                $request->validate([
+                    'uraian_id' => 'required|exists:uraian,id',
+                    'nama_sub_uraian' => 'required|string|max:255'
+                ]);
+
+                SubUraian::create([
+                    'uraian_id' => $request->uraian_id,
+                    'nama_sub_uraian' => $request->nama_sub_uraian
+                ]);
+                break;
+
+            default:
+                abort(404);
         }
 
-        return redirect()->route('master.index')->with('success','Data berhasil ditambah');
+        return redirect()->route('master.index')
+            ->with('success', 'Data berhasil ditambahkan');
     }
 
+    // =========================
+    // EDIT
+    // =========================
     public function edit($type, $id)
     {
-        $data = match($type){
-            'kategori'=> Kategori::findOrFail($id),
-            'uraian'=> Uraian::findOrFail($id),
-            'suburaian'=> SubUraian::findOrFail($id),
-            default=> abort(404),
+        $data = match ($type) {
+            'kategori' => Kategori::findOrFail($id),
+            'uraian' => Uraian::findOrFail($id),
+            'suburaian' => SubUraian::findOrFail($id),
+            default => abort(404),
         };
 
-        return view('master.form', compact('type','data'));
+        return view('master.form', compact('type', 'data'));
     }
 
+    // =========================
+    // UPDATE (FIX RELASI)
+    // =========================
     public function update(Request $request, $type, $id)
     {
-        $request->validate(['nama'=>'required|string|max:255']);
+        switch ($type) {
 
-        $model = match($type){
-            'kategori'=> Kategori::findOrFail($id),
-            'uraian'=> Uraian::findOrFail($id),
-            'suburaian'=> SubUraian::findOrFail($id),
-            default=> abort(404),
-        };
+            case 'kategori':
+                $request->validate([
+                    'nama_kategori' => 'required|string|max:255'
+                ]);
 
-        $model->update($request->only('nama'));
+                Kategori::findOrFail($id)->update([
+                    'nama_kategori' => $request->nama_kategori
+                ]);
+                break;
 
-        return redirect()->route('master.index')->with('success','Data berhasil diupdate');
+            case 'uraian':
+                $request->validate([
+                    'kategori_id' => 'required|exists:kategori,id',
+                    'nama_uraian' => 'required|string|max:255'
+                ]);
+
+                Uraian::findOrFail($id)->update([
+                    'kategori_id' => $request->kategori_id,
+                    'nama_uraian' => $request->nama_uraian
+                ]);
+                break;
+
+            case 'suburaian':
+                $request->validate([
+                    'uraian_id' => 'required|exists:uraian,id',
+                    'nama_sub_uraian' => 'required|string|max:255'
+                ]);
+
+                SubUraian::findOrFail($id)->update([
+                    'uraian_id' => $request->uraian_id,
+                    'nama_sub_uraian' => $request->nama_sub_uraian
+                ]);
+                break;
+
+            default:
+                abort(404);
+        }
+
+        return redirect()->route('master.index')
+            ->with('success', 'Data berhasil diupdate');
     }
 
+    // =========================
+    // DELETE
+    // =========================
     public function destroy($type, $id)
     {
-        $model = match($type){
-            'kategori'=> Kategori::findOrFail($id),
-            'uraian'=> Uraian::findOrFail($id),
-            'suburaian'=> SubUraian::findOrFail($id),
-            default=> abort(404),
+        $model = match ($type) {
+            'kategori' => Kategori::findOrFail($id),
+            'uraian' => Uraian::findOrFail($id),
+            'suburaian' => SubUraian::findOrFail($id),
+            default => abort(404),
         };
 
         $model->delete();
 
-        return redirect()->route('master.index')->with('success','Data berhasil dihapus');
+        return redirect()->route('master.index')
+            ->with('success', 'Data berhasil dihapus');
     }
 }

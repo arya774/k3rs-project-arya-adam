@@ -76,34 +76,34 @@
 
     <h5>Uraian</h5>
     <form id="formUraian">
-        <select id="kategori" class="form-select mb-2">
+        <select name="kategori_id" id="kategori" class="form-select mb-2" required>
             <option value="">Pilih Kategori</option>
             @foreach($kategoris as $k)
                 <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
             @endforeach
         </select>
 
-       <input type="text" id="inputUraian" class="form-control mb-2" placeholder="Masukkan Uraian">
+        <input type="text" name="nama_uraian" id="inputUraian" class="form-control mb-2" placeholder="Masukkan Uraian" required>
 
         <button type="submit" class="btn btn-primary w-100">Tambah</button>
     </form>
 
-
     <h5>Sub Uraian</h5>
     <form id="formSub">
-        <select name="uraian_id" class="form-select mb-2">
+        <select name="uraian_id" class="form-select mb-2" required>
             @foreach($kategoris as $k)
                 @foreach($k->uraian as $u)
                     <option value="{{ $u->id }}">{{ $u->nama_uraian }}</option>
                 @endforeach
             @endforeach
         </select>
+
         <input type="text" name="nama_sub_uraian" class="form-control mb-2" required>
+
         <button type="submit" class="btn btn-primary w-100">Tambah</button>
     </form>
+
 </div>
-
-
 <!-- STEP 2 -->
 <div class="step" id="step2">
 
@@ -122,7 +122,7 @@
             </div>
         </div>
 
-        <!-- ✅ DATA PETUGAS -->
+        <!-- PETUGAS -->
         <div class="card mt-3 mb-3">
             <div class="card-header bg-success text-white">Data Petugas</div>
             <div class="card-body">
@@ -130,26 +130,25 @@
                 <label>Nama Petugas K3RS</label>
                 <input type="text" name="nama_petugas_k3rs" class="form-control mb-2" required>
 
-                <canvas id="signature-pad-k3rs"></canvas>
+                <canvas id="signature-pad-k3rs" style="border:1px solid #000; width:100%; height:120px;"></canvas>
                 <input type="hidden" name="paraf_petugas_k3rs" id="paraf_k3rs">
 
-                <button type="button" class="btn btn-danger btn-sm mt-2" onclick="clearK3rs()">Hapus</button>
-
-                <button type="button" onclick="tambahUraian()">Tambah</button>
+                <button type="button" class="btn btn-danger btn-sm mt-2" onclick="clearK3rs()">Hapus TTD</button>
 
                 <hr>
 
                 <label>Nama Petugas Ruangan</label>
                 <input type="text" name="nama_petugas_ruangan" class="form-control mb-2" required>
 
-                <canvas id="signature-pad-ruangan"></canvas>
+                <canvas id="signature-pad-ruangan" style="border:1px solid #000; width:100%; height:120px;"></canvas>
                 <input type="hidden" name="paraf_petugas_ruangan" id="paraf_ruangan">
 
-                <button type="button" class="btn btn-danger btn-sm mt-2" onclick="clearRuangan()">Hapus</button>
+                <button type="button" class="btn btn-danger btn-sm mt-2" onclick="clearRuangan()">Hapus TTD</button>
+
             </div>
         </div>
 
-        <!-- 🔥 PINDAH KE SINI -->
+        <!-- FILTER KATEGORI -->
         <div class="mb-3">
             <label>Pilih Kategori Inspeksi</label>
             <select id="filterKategori" class="form-control">
@@ -160,6 +159,49 @@
             </select>
         </div>
 
+        <!-- KATEGORI LIST -->
+        @foreach($kategoris as $k)
+        <div class="kategori-box" id="kategori-{{ $k->id }}" style="display:none;">
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    {{ $k->nama_kategori }}
+                </div>
+                <div class="card-body">
+
+                    @foreach($k->uraian as $u)
+                        <b>{{ $u->nama_uraian }}</b><br>
+
+                        @foreach($u->subUraian as $s)
+                            <div class="mb-2">
+                                {{ $s->nama_sub_uraian }} <br>
+
+                                <label>
+                                    <input type="radio" name="nilai[{{ $s->id }}]" value="ya"> Ya
+                                </label>
+
+                                <label>
+                                    <input type="radio" name="nilai[{{ $s->id }}]" value="tidak"> Tidak
+                                </label>
+                            </div>
+
+                            <textarea name="catatan[{{ $s->id }}]" class="form-control mb-3" rows="2" placeholder="Catatan..."></textarea>
+                        @endforeach
+
+                        <hr>
+                    @endforeach
+
+                </div>
+            </div>
+        </div>
+        @endforeach
+
+        <button type="submit" class="btn btn-success w-100 mt-3">
+            Simpan Inspeksi
+        </button>
+
+    </form>
+
+</div>
         <!-- 🔥 FORM DINAMIS -->
         @foreach($kategoris as $k)
         <div class="kategori-box" id="kategori-{{ $k->id }}" style="display:none;">
