@@ -24,6 +24,13 @@
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
 <div class="login-container">
+    <div class="logo-wrapper">
+    <div class="logo-rs">
+        <div class="building">
+            <div class="cross"></div>
+        </div>
+    </div>
+</div>
     <h2>Login K3RS</h2>
 
     <form method="POST" action="{{ route('login.process') }}">

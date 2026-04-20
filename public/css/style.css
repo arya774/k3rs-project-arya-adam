@@ -287,3 +287,120 @@ body {
 .btn-primary:hover {
     background: var(--primary);
 }
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* BACKGROUND ANIMASI */
+body {
+    height: 100vh;
+    background: linear-gradient(-45deg, #4facfe, #00f2fe, #667eea, #764ba2);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ANIMASI BACKGROUND */
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* CARD LOGIN */
+.login-container {
+    background: #ffffff;
+    padding: 40px;
+    width: 350px;
+    border-radius: 15px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+    text-align: center;
+
+    /* ANIMASI MASUK */
+    animation: fadeSlide 0.8s ease;
+}
+
+/* ANIMASI CARD */
+@keyframes fadeSlide {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* TITLE */
+.login-container h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* INPUT */
+.input-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.input-group label {
+    font-size: 14px;
+    color: #555;
+}
+
+/* INPUT STYLE */
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+/* INPUT ANIMASI */
+.input-group input:focus {
+    border-color: #4facfe;
+    box-shadow: 0 0 8px rgba(79, 172, 254, 0.5);
+    transform: scale(1.02);
+}
+
+/* BUTTON */
+.btn-login {
+    width: 100%;
+    padding: 10px;
+    background: #4facfe;
+    border: none;
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* HOVER BUTTON */
+.btn-login:hover {
+    background: #00c6ff;
+    transform: translateY(-2px);
+}
+
+/* KLIK BUTTON */
+.btn-login:active {
+    transform: scale(0.97);
+}
+
+/* REMEMBER */
+.remember {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 13px;
+}
