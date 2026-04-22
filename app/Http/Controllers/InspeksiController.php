@@ -30,7 +30,7 @@ class InspeksiController extends Controller
 
         return view('inspeksi.wizard', compact('kategoris'));
     }
-    
+
     public function getUraian($id)
 {
     return \App\Models\Uraian::where('kategori_id', $id)->get();
@@ -39,59 +39,72 @@ class InspeksiController extends Controller
     // MASTER DATA (FIX RETURN + AUTO RELOAD SUPPORT)
     // ============================
     public function storeMasterData(Request $request, $type)
-    {
-        try {
+{
+    try {
 
-            if ($type === 'kategori') {
+        if ($type === 'kategori') {
 
-                $request->validate([
-                    'nama_kategori' => 'required|string|unique:kategori,nama_kategori'
-                ]);
-
-                $data = Kategori::create([
-                    'nama_kategori' => $request->nama_kategori
-                ]);
-
-            } elseif ($type === 'uraian') {
-
-                $request->validate([
-                    'kategori_id' => 'required|exists:kategori,id',
-                    'nama_uraian' => 'required|string'
-                ]);
-
-                $data = Uraian::create([
-                    'kategori_id' => $request->kategori_id,
-                    'nama_uraian' => $request->nama_uraian
-                ]);
-
-            } elseif ($type === 'suburaian') {
-
-                $request->validate([
-                    'uraian_id' => 'required|exists:uraian,id',
-                    'nama_sub_uraian' => 'required|string'
-                ]);
-
-                $data = SubUraian::create([
-                    'uraian_id' => $request->uraian_id,
-                    'nama_sub_uraian' => $request->nama_sub_uraian
-                ]);
-
-            } else {
-                return response()->json(['error' => 'Tipe tidak valid'], 400);
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Data berhasil ditambahkan',
-                'data' => $data
+            $request->validate([
+                'nama_kategori' => 'required|string|unique:kategori,nama_kategori'
             ]);
 
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => $e->getMessage()
-            ], 500);
+            $data = Kategori::create([
+                'nama_kategori' => $request->nama_kategori
+            ]);
+
+        } elseif ($type === 'uraian') {
+
+            $request->validate([
+                'kategori_id' => 'required|exists:kategori,id',
+                'nama_uraian' => 'required|string'
+            ]);
+
+            $data = Uraian::create([
+                'kategori_id' => $request->kategori_id,
+                'nama_uraian' => $request->nama_uraian
+            ]);
+
+        } elseif ($type === 'suburaian') {
+
+            $request->validate([
+                'uraian_id' => 'required|exists:uraian,id',
+                'nama_sub_uraian' => 'required'
+            ]);
+
+            // 🔥 FIX: handle string & array
+            $subUraians = $request->nama_sub_uraian;
+
+            if (!is_array($subUraians)) {
+                $subUraians = [$subUraians];
+            }
+
+            $data = [];
+
+            foreach ($subUraians as $sub) {
+                if (!empty(trim($sub))) {
+                    $data[] = SubUraian::create([
+                        'uraian_id' => $request->uraian_id,
+                        'nama_sub_uraian' => trim($sub)
+                    ]);
+                }
+            }
+
+        } else {
+            return response()->json(['error' => 'Tipe tidak valid'], 400);
         }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data berhasil ditambahkan',
+            'data' => $data ?? null
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 
 
     // ============================
