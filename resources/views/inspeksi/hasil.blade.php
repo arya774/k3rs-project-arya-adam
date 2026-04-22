@@ -166,7 +166,7 @@
         </div>
     </div>
 
-   <!-- TANDA TANGAN -->
+  <!-- TANDA TANGAN -->
 <div class="ttd-box row text-center">
 
     <!-- K3RS -->
@@ -174,10 +174,16 @@
         <p class="ttd-label">Petugas K3RS</p>
 
         <div class="ttd-img-box">
-            @if(!empty($inspeksi->paraf_petugas_k3rs))
-                <img src="{{ asset('storage/paraf/' . $inspeksi->paraf_petugas_k3rs) }}" class="ttd-img">
+            @php
+                $file_k3rs = public_path('storage/paraf/' . trim($inspeksi->paraf_petugas_k3rs));
+            @endphp
+
+            @if(!empty($inspeksi->paraf_petugas_k3rs) && file_exists($file_k3rs))
+                <img src="{{ asset('storage/paraf/' . trim($inspeksi->paraf_petugas_k3rs)) }}" class="ttd-img">
             @else
-                <span class="text-muted">Belum ada tanda tangan</span>
+                <span class="text-danger">TTD tidak ditemukan</span>
+                <br>
+                <small>{{ $inspeksi->paraf_petugas_k3rs }}</small>
             @endif
         </div>
 
@@ -193,10 +199,16 @@
         <p class="ttd-label">Petugas Ruangan</p>
 
         <div class="ttd-img-box">
-            @if(!empty($inspeksi->paraf_petugas_ruangan))
-                <img src="{{ asset('storage/paraf/' . $inspeksi->paraf_petugas_ruangan) }}" class="ttd-img">
+            @php
+                $file_ruangan = public_path('storage/paraf/' . trim($inspeksi->paraf_petugas_ruangan));
+            @endphp
+
+            @if(!empty($inspeksi->paraf_petugas_ruangan) && file_exists($file_ruangan))
+                <img src="{{ asset('storage/paraf/' . trim($inspeksi->paraf_petugas_ruangan)) }}" class="ttd-img">
             @else
-                <span class="text-muted">Belum ada tanda tangan</span>
+                <span class="text-danger">TTD tidak ditemukan</span>
+                <br>
+                <small>{{ $inspeksi->paraf_petugas_ruangan }}</small>
             @endif
         </div>
 
