@@ -67,7 +67,6 @@
     <input type="text" name="nama_kategori" class="form-control mb-2" required>
     <button class="btn btn-primary w-100">Tambah</button>
 </form>
-
 <h5>Uraian</h5>
 <form id="formUraian">
     <select name="kategori_id" id="kategori" class="form-select mb-2" required>
