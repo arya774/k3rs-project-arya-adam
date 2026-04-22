@@ -90,7 +90,6 @@
 
     <h5>Sub Uraian</h5>
     <form id="formSub">
-<<<<<<< HEAD
         <select name="uraian_id" class="form-select mb-2" required>
             @foreach($kategoris as $k)
                 @foreach($k->uraian as $u)
@@ -99,21 +98,6 @@
             @endforeach
         </select>
 
-=======
-       <select name="uraian_id" class="form-select mb-2">
-    <option value="">-- Pilih Uraian --</option>
-
-    @foreach($kategoris as $k)
-        <optgroup label="{{ $k->nama_kategori }}">
-           @foreach($k->uraian as $u)
-                <option value="{{ $u->id }}">
-                    {{ $u->nama_uraian }}
-                </option>
-            @endforeach
-        </optgroup>
-    @endforeach
-</select>
->>>>>>> d25d800fa3ff505cf00512fe03985663a8fd4200
         <input type="text" name="nama_sub_uraian" class="form-control mb-2" required>
 
         <button type="submit" class="btn btn-primary w-100">Tambah</button>
@@ -146,23 +130,19 @@
                 <label>Nama Petugas K3RS</label>
                 <input type="text" name="nama_petugas_k3rs" class="form-control mb-2" required>
 
-                <canvas id="signature-pad-k3rs" style="border:1px solid #000; width:100%; height:120px;"></canvas>
+                <canvas id="signature-pad-k3rs" width="250" height="100"
+                style="border:1px solid #000;"></canvas>
                 <input type="hidden" name="paraf_petugas_k3rs" id="paraf_k3rs">
 
-<<<<<<< HEAD
                 <button type="button" class="btn btn-danger btn-sm mt-2" onclick="clearK3rs()">Hapus TTD</button>
-=======
-                <button type="button" class="btn btn-danger btn-sm mt-2" onclick="clearK3rs()">Hapus</button>
-
-
->>>>>>> d25d800fa3ff505cf00512fe03985663a8fd4200
 
                 <hr>
 
                 <label>Nama Petugas Ruangan</label>
                 <input type="text" name="nama_petugas_ruangan" class="form-control mb-2" required>
 
-                <canvas id="signature-pad-ruangan" style="border:1px solid #000; width:100%; height:120px;"></canvas>
+                <canvas id="signature-pad-ruangan" width="250" height="100"
+                style="border:1px solid #000;"></canvas>
                 <input type="hidden" name="paraf_petugas_ruangan" id="paraf_ruangan">
 
                 <button type="button" class="btn btn-danger btn-sm mt-2" onclick="clearRuangan()">Hapus TTD</button>
