@@ -3,9 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Kategori;
-use App\Models\Uraian;
-use App\Models\SubUraian;
 use App\Models\Inspeksi;
 use App\Models\DetailInspeksi;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +10,9 @@ use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Exports\InspeksiExport;
 use Maatwebsite\Excel\Facades\Excel;
-
+use App\Models\Kategori;
+use App\Models\Uraian;
+use App\Models\SubUraian;
 
 
 
@@ -30,6 +29,58 @@ class InspeksiController extends Controller
 
         return view('inspeksi.wizard', compact('kategoris'));
     }
+
+    public function deleteKategori($id)
+{
+    $kategori = \App\Models\Kategori::findOrFail($id);
+
+    // kalau ada relasi uraian, amanin dulu
+    if ($kategori->uraian()->count() > 0) {
+        foreach ($kategori->uraian as $u) {
+
+            if ($u->subUraian()->count() > 0) {
+                $u->subUraian()->delete();
+            }
+
+            $u->delete();
+        }
+    }
+
+    $kategori->delete();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Kategori berhasil dihapus'
+    ]);
+}
+
+    public function kategori()
+{
+    $kategoris = \App\Models\Kategori::all();
+    return view('inspeksi.kategori', compact('kategoris'));
+}
+
+
+public function uraian()
+{
+    $kategoris = Kategori::all();
+    return view('inspeksi.uraian', compact('kategoris'));
+}
+
+public function subUraian()
+{
+    $uraian = Uraian::all();
+    return view('inspeksi.sub_uraian', compact('uraian'));
+}
+public function getUraianAll()
+{
+    return \App\Models\Uraian::with('kategori')->get();
+}
+
+public function getSubAll()
+{
+    return \App\Models\SubUraian::all();
+}
 
     public function getUraian($id)
 {
@@ -80,14 +131,27 @@ class InspeksiController extends Controller
 
             $data = [];
 
+            SubUraian::where('uraian_id', $request->uraian_id)->delete();
+
             foreach ($subUraians as $sub) {
-                if (!empty(trim($sub))) {
-                    $data[] = SubUraian::create([
-                        'uraian_id' => $request->uraian_id,
-                        'nama_sub_uraian' => trim($sub)
-                    ]);
-                }
-            }
+
+            $sub = trim($sub);
+
+            if (!empty($sub)) {
+
+        // 🔥 CEK DULU (ANTI DUPLIKAT)
+        $exists = SubUraian::where('uraian_id', $request->uraian_id)
+            ->where('nama_sub_uraian', $sub)
+            ->exists();
+
+        if (!$exists) {
+            SubUraian::create([
+                'uraian_id' => $request->uraian_id,
+                'nama_sub_uraian' => $sub
+            ]);
+        }
+    }
+}
 
         } else {
             return response()->json(['error' => 'Tipe tidak valid'], 400);
@@ -198,6 +262,23 @@ class InspeksiController extends Controller
             'persentase'
         ));
     }
+    public function deleteSubUraian($id)
+{
+    try {
+        $sub = SubUraian::findOrFail($id);
+        $sub->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Sub uraian berhasil dihapus'
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Gagal hapus'
+        ], 500);
+    }
+}
 
     // ============================
     // PDF
@@ -262,3 +343,4 @@ class InspeksiController extends Controller
         ));
     }
 }
+
