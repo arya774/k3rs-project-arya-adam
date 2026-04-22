@@ -128,10 +128,13 @@
                     <tbody id="tableKategori">
                         @foreach($kategoris as $k)
                         <tr id="row-{{ $k->id }}">
-                            <td class="fw-semibold">
-                                {{ $k->nama_kategori }}
-                            </td>
-
+    <td>{{ $k->nama_kategori }}</td>
+    <td>
+        <button class="btn btn-danger btn-sm btn-delete" data-id="{{ $k->id }}">
+            Hapus
+        </button>
+    </td>
+</tr>
                             <td class="text-center">
                                 <button class="btn btn-sm btn-outline-danger btn-delete"
                                         data-id="{{ $k->id }}">
@@ -168,40 +171,31 @@ $('#formKategori').submit(function(e){
 });
 
 // DELETE
-$(document).on('click','.btn-delete',function(){
+$(document).on('click', '.btn-delete', function(){
 
     let id = $(this).data('id');
 
-    Swal.fire({
-        title: 'Yakin hapus kategori ini?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Ya hapus'
-    }).then((result)=>{
+    if(!confirm('Yakin mau hapus?')) return;
 
-        if(result.isConfirmed){
-
-            $.ajax({
-                url: '/inspeksi/kategori-delete/' + id,
-                type: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(){
-                    $('#row-'+id).remove();
-                    Swal.fire('Berhasil','Kategori dihapus','success');
-                },
-                error: function(xhr){
-                    console.log(xhr.responseText);
-                    Swal.fire('Gagal','Tidak bisa hapus','error');
-                }
-            });
-
+    $.ajax({
+        url: '/inspeksi/kategori-delete/' + id,
+        type: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(res){
+            $('#row-'+id).remove();
+            alert('Berhasil dihapus');
+        },
+        error: function(xhr){
+            console.log(xhr.responseText);
+            alert('Gagal hapus');
         }
-
     });
 
+
 });
+
 </script>
 
 </body>
