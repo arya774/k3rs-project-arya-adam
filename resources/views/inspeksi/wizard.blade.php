@@ -79,14 +79,19 @@
 
     <h3 class="mb-4">Form Inspeksi K3 RSUD</h3>
 
-    <!-- STEP NAV -->
-    <div class="mb-3">
-        <button class="btn btn-primary btn-sm" onclick="showStep(1)">1. Data & Petugas</button>
-        <button class="btn btn-outline-primary btn-sm" onclick="showStep(2)">2. Checklist</button>
-    </div>
-
-    <form id="formInspeksi" method="POST" action="{{ route('inspeksi.store') }}">
-        @csrf
+<h5>Kategori</h5>
+<form id="formKategori">
+    <input type="text" name="nama_kategori" class="form-control mb-2" required>
+    <button class="btn btn-primary w-100">Tambah</button>
+</form>
+<h5>Uraian</h5>
+<form id="formUraian">
+    <select name="kategori_id" id="kategori" class="form-select mb-2" required>
+        <option value="">Pilih Kategori</option>
+        @foreach($kategoris as $k)
+            <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
+        @endforeach
+    </select>
 
         <!-- STEP 1 -->
         <div class="step active card card-glass p-3" id="step1">

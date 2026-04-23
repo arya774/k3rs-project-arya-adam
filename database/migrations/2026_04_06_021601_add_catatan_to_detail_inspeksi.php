@@ -8,15 +8,21 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('detail_inspeksi', function (Blueprint $table) {
-            $table->text('catatan')->nullable()->after('nilai');
-        });
+        // ✅ CEK DULU sebelum tambah kolom
+        if (!Schema::hasColumn('detail_inspeksi', 'catatan')) {
+            Schema::table('detail_inspeksi', function (Blueprint $table) {
+                $table->text('catatan')->nullable()->after('nilai');
+            });
+        }
     }
 
     public function down(): void
     {
-        Schema::table('detail_inspeksi', function (Blueprint $table) {
-            $table->dropColumn('catatan');
-        });
+        // ✅ CEK DULU sebelum hapus kolom
+        if (Schema::hasColumn('detail_inspeksi', 'catatan')) {
+            Schema::table('detail_inspeksi', function (Blueprint $table) {
+                $table->dropColumn('catatan');
+            });
+        }
     }
 };
