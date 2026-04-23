@@ -32,25 +32,25 @@ class InspeksiController extends Controller
 
     public function deleteKategori($id)
 {
-    $kategori = \App\Models\Kategori::findOrFail($id);
+    $kategori = Kategori::with('uraian.subUraian')->find($id);
 
-    // kalau ada relasi uraian, amanin dulu
-    if ($kategori->uraian()->count() > 0) {
-        foreach ($kategori->uraian as $u) {
-
-            if ($u->subUraian()->count() > 0) {
-                $u->subUraian()->delete();
-            }
-
-            $u->delete();
-        }
+    if (!$kategori) {
+        return response()->json(['message' => 'Not found'], 404);
     }
 
+    // hapus sub uraian dulu
+    foreach ($kategori->uraian as $u) {
+        $u->subUraian()->delete();
+    }
+
+    // hapus uraian
+    $kategori->uraian()->delete();
+
+    // baru kategori
     $kategori->delete();
 
     return response()->json([
-        'success' => true,
-        'message' => 'Kategori berhasil dihapus'
+        'success' => true
     ]);
 }
 
