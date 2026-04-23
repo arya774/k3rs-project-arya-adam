@@ -25,14 +25,10 @@
             border-radius: 15px 15px 0 0;
         }
 
-        .btn-primary{
-            background: #0d6efd;
-            border: none;
-        }
-
         .list-item{
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 10px;
             border-bottom: 1px solid #eee;
         }
@@ -40,12 +36,21 @@
         .list-item:hover{
             background: #f0f6ff;
         }
+
+        .tag-box{
+            background: #e7f1ff;
+            padding: 6px 10px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
     </style>
 </head>
 
 <body class="p-4">
 
-    <a href="/inspeksi/wizard" class="btn btn-secondary mb-3">
+<a href="/inspeksi/wizard" class="btn btn-secondary mb-3">
     ← Kembali
 </a>
 
@@ -59,18 +64,19 @@
 
         <div class="p-4">
 
-            <!-- SELECT URAIAN -->
+            <!-- SELECT -->
             <label class="form-label">Pilih Uraian</label>
-            <select id="uraian" class="form-select mb-3">
-                <option value="">Pilih Uraian</option>
-            </select>
+            <select id="uraian" class="form-select mb-3"></select>
 
             <!-- INPUT -->
             <label class="form-label">Nama Sub Uraian</label>
-            <input type="text" id="nama_sub" class="form-control mb-3" placeholder="Contoh: APD lengkap">
+            <input type="text" id="nama_sub" class="form-control mb-2" placeholder="Ketik lalu tekan ENTER">
+
+            <!-- PREVIEW -->
+            <div id="previewList" class="mb-3"></div>
 
             <button id="btnSub" class="btn btn-primary w-100 mb-3">
-                + Tambah Sub Uraian
+                + Simpan Semua
             </button>
 
             <hr>
@@ -92,9 +98,60 @@ $.ajaxSetup({
     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
 });
 
+let subList = [];
+
+// ======================
+// ENTER = TAMBAH LIST 🔥
+// ======================
+$('#nama_sub').keypress(function(e){
+
+    if(e.which == 13){
+        e.preventDefault();
+
+        let val = $(this).val().trim();
+
+        if(val === '') return;
+
+        subList.push(val);
+        renderPreview();
+
+        $(this).val('');
+    }
+
+});
+
+// ======================
+// PREVIEW LIST
+// ======================
+function renderPreview(){
+
+    let html = '';
+
+    subList.forEach((item,index)=>{
+        html += `
+        <div class="tag-box">
+            <span>${item}</span>
+            <button class="btn btn-sm btn-danger" onclick="removeItem(${index})">x</button>
+        </div>`;
+    });
+
+    $('#previewList').html(html);
+}
+
+// ======================
+// HAPUS ITEM SEBELUM SIMPAN
+// ======================
+function removeItem(index){
+    subList.splice(index,1);
+    renderPreview();
+}
+
+// ======================
 // LOAD URAIAN
+// ======================
 function loadUraian(){
-    $.get('/get-uraian-all', function(data){
+
+    $.get('/inspeksi/get-uraian-all', function(data){
 
         let opt = '<option value="">Pilih Uraian</option>';
 
@@ -104,12 +161,15 @@ function loadUraian(){
 
         $('#uraian').html(opt);
     });
+
 }
 
-// LOAD SUB URAIAN
+// ======================
+// LOAD DATA SUB
+// ======================
 function loadSub(){
 
-    $.get('/get-sub-all', function(data){
+    $.get('/inspeksi/get-sub-all', function(data){
 
         let html = '';
 
@@ -125,37 +185,68 @@ function loadSub(){
 
         $('#listSub').html(html);
     });
+
 }
 
-// TAMBAH
+// ======================
+// SIMPAN 🔥 MULTI DATA
+// ======================
 $('#btnSub').click(function(){
 
-    $.post('/inspeksi/master/suburaian',{
-        uraian_id: $('#uraian').val(),
-        nama_sub_uraian: $('#nama_sub').val()
-    },function(){
+    let uraian = $('#uraian').val();
 
-        $('#nama_sub').val('');
+    if(!uraian){
+        alert('Pilih uraian dulu!');
+        return;
+    }
+
+    if(subList.length === 0){
+        alert('Isi minimal 1 data!');
+        return;
+    }
+
+    $.post('/inspeksi/master/suburaian',{
+        uraian_id: uraian,
+        nama_sub_uraian: subList
+    },function(res){
+
+        subList = [];
+        renderPreview();
         loadSub();
+
+    }).fail(function(xhr){
+        console.log(xhr.responseText);
+        alert('Gagal simpan');
     });
+
 });
 
-// HAPUS
+// ======================
+// DELETE
+// ======================
 $(document).on('click','.btn-hapus',function(){
 
     let id = $(this).data('id');
 
+    if(!confirm('Yakin hapus?')) return;
+
     $.ajax({
-        url: '/inspeksi/master/suburaian/' + id,
+        url: '/suburaian/' + id,
         type: 'DELETE',
         success: function(){
             loadSub();
+        },
+        error: function(xhr){
+            console.log(xhr.responseText);
+            alert('Gagal hapus');
         }
     });
 
 });
 
+// ======================
 // INIT
+// ======================
 loadUraian();
 loadSub();
 

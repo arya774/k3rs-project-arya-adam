@@ -12,24 +12,41 @@ use App\Http\Controllers\UraianController;
 | AUTH (LOGIN)
 |--------------------------------------------------------------------------
 */
+Route::prefix('inspeksi')->group(function () {
+
+    // KATEGORI
+    Route::delete('/kategori-delete/{id}', [InspeksiController::class, 'deleteKategori']);
+
+    // URAIAN
+    Route::delete('/uraian-delete/{id}', [InspeksiController::class, 'deleteUraian']);
+    Route::get('/get-uraian-all', [InspeksiController::class, 'getUraianAll']);
+
+    // MASTER
+    Route::post('/master/{type}', [InspeksiController::class, 'storeMasterData'])
+        ->where('type', 'kategori|uraian|suburaian');
+
+    // VIEW
+    Route::get('/kategori', [InspeksiController::class, 'kategori']);
+    Route::get('/uraian', [InspeksiController::class, 'uraian']);
+    Route::get('/sub-uraian', [InspeksiController::class, 'subUraian']);
+});
+
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/get-uraian/{id}', [InspeksiController::class, 'getUraian']);
 Route::delete('/suburaian/{id}', [InspeksiController::class, 'deleteSubUraian']);
 Route::post('/uraian', [UraianController::class, 'store'])->name('uraian.store');
-Route::prefix('inspeksi')->group(function () {
-    Route::get('/get-uraian-all', [InspeksiController::class, 'getUraianAll']);
 Route::get('/get-sub-all', [InspeksiController::class, 'getSubAll']);
 Route::delete('/inspeksi/kategori-delete/{id}', [InspeksiController::class, 'deleteKategori']);
-    Route::get('/kategori', [InspeksiController::class, 'kategori']);
-    Route::post('/kategori', [InspeksiController::class, 'storeKategori']);
+Route::get('/inspeksi/get-sub-all', [InspeksiController::class, 'getSubAll']);
+Route::post('/kategori', [InspeksiController::class, 'storeKategori']);
+Route::prefix('inspeksi')->group(function () {
 
-    Route::get('/uraian', [InspeksiController::class, 'uraian']);
-    Route::post('/uraian', [InspeksiController::class, 'storeUraian']);
-
-    Route::get('/sub-uraian', [InspeksiController::class, 'subUraian']);
-    Route::post('/sub-uraian', [InspeksiController::class, 'storeSubUraian']);
 });
+
+    Route::post('/uraian', [InspeksiController::class, 'storeUraian']);
+    Route::post('/sub-uraian', [InspeksiController::class, 'storeSubUraian']);
+
 
 
 // 🔒 Halaman login (hanya untuk guest / belum login)

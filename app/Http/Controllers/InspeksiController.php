@@ -38,6 +38,7 @@ class InspeksiController extends Controller
         return response()->json(['message' => 'Not found'], 404);
     }
 
+
     // hapus sub uraian dulu
     foreach ($kategori->uraian as $u) {
         $u->subUraian()->delete();
@@ -54,6 +55,21 @@ class InspeksiController extends Controller
     ]);
 }
 
+public function deleteUraian($id)
+{
+    $data = \App\Models\Uraian::find($id);
+
+    if($data){
+        // hapus sub uraian dulu
+        $data->subUraian()->delete();
+
+        $data->delete();
+
+        return response()->json(['success' => true]);
+    }
+
+    return response()->json(['success' => false]);
+}
     public function kategori()
 {
     $kategoris = \App\Models\Kategori::all();

@@ -55,12 +55,13 @@
     </div>
 </div>
 
-<a href="/inspeksi/wizard" class="btn btn-secondary mb-3">
-    ← Kembali
-</a>
+<div class="container mb-3">
+    <a href="/inspeksi/wizard" class="btn btn-secondary">
+        ← Kembali
+    </a>
+</div>
 
 <div class="container">
-
     <div class="row">
 
         <!-- FORM -->
@@ -69,7 +70,6 @@
 
                 <h5 class="text-primary mb-3">Tambah Uraian</h5>
 
-                <!-- PILIH KATEGORI -->
                 <select id="kategori" class="form-select mb-2">
                     <option value="">Pilih Kategori</option>
                     @foreach($kategoris as $k)
@@ -77,7 +77,6 @@
                     @endforeach
                 </select>
 
-                <!-- INPUT URAIAN -->
                 <input type="text"
                        id="nama_uraian"
                        class="form-control mb-3"
@@ -105,9 +104,7 @@
                         </tr>
                     </thead>
 
-                    <tbody id="tableUraian">
-                        <!-- AJAX LOAD -->
-                    </tbody>
+                    <tbody id="tableUraian"></tbody>
 
                 </table>
 
@@ -115,40 +112,59 @@
         </div>
 
     </div>
-
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 
 <script>
 
+// CSRF
 $.ajaxSetup({
     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
 });
 
 // ======================
-// TAMBAH URAIAN
+// TAMBAH URAIAN (FIXED)
 // ======================
 $('#btnUraian').click(function(){
 
-    $.post('/inspeksi/master/uraian', {
-        kategori_id: $('#kategori').val(),
-        nama_uraian: $('#nama_uraian').val()
-    }, function(){
+    let kategori = $('#kategori').val();
+    let nama = $('#nama_uraian').val();
 
+    // VALIDASI
+    if(kategori === ''){
+        alert('❗ Pilih kategori dulu');
+        return;
+    }
+
+    if(nama === ''){
+        alert('❗ Nama uraian tidak boleh kosong');
+        return;
+    }
+
+    $.post('/inspeksi/master/uraian', {
+        kategori_id: kategori,
+        nama_uraian: nama
+    })
+    .done(function(){
         $('#nama_uraian').val('');
         loadUraian();
-
+        alert('✅ Berhasil ditambahkan');
+    })
+    .fail(function(xhr){
+        console.log(xhr.responseText);
+        alert('❌ Gagal tambah data (cek controller)');
     });
 
 });
 
+
 // ======================
-// LOAD URAIAN (AUTO)
+// LOAD URAIAN (FIXED)
 // ======================
 function loadUraian(){
 
-    $.get('/get-uraian-all', function(data){
+    $.get('/inspeksi/get-uraian-all', function(data){
 
         let html = '';
 
@@ -171,27 +187,36 @@ function loadUraian(){
 
 }
 
+
 // ======================
-// DELETE URAIAN
+// DELETE URAIAN (FIXED)
 // ======================
 $(document).on('click','.btn-delete',function(){
 
     let id = $(this).data('id');
 
-    if(confirm('Hapus uraian ini?')){
+    if(!confirm('Hapus uraian ini?')) return;
 
-        $.ajax({
-            url: '/uraian-delete/' + id,
-            type: 'DELETE',
-            success: function(){
+    $.ajax({
+        url: '/inspeksi/uraian-delete/' + id,
+        type: 'DELETE',
+        success: function(res){
+            if(res.success){
                 loadUraian();
+            } else {
+                alert('Gagal hapus dari server');
             }
-        });
-
-    }
+        },
+        error: function(xhr){
+            console.log(xhr.responseText); // 🔥 buat lihat error asli
+            alert('ERROR SERVER');
+        }
+    });
 
 });
 
+
+// LOAD AWAL
 loadUraian();
 
 </script>

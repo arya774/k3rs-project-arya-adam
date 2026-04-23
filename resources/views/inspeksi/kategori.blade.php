@@ -29,17 +29,12 @@
 
         .title {
             font-weight: 700;
-            letter-spacing: 0.5px;
         }
 
         .btn-primary {
             background: linear-gradient(90deg, #0d6efd, #1e88e5);
             border: none;
             border-radius: 10px;
-        }
-
-        .btn-primary:hover {
-            opacity: 0.9;
         }
 
         .table thead {
@@ -49,7 +44,6 @@
 
         .table tbody tr:hover {
             background: #f1f7ff;
-            transition: 0.2s;
         }
 
         .badge-total {
@@ -58,14 +52,6 @@
             font-weight: 600;
             padding: 6px 14px;
             border-radius: 20px;
-        }
-
-        .form-control {
-            border-radius: 10px;
-        }
-
-        .btn-outline-danger {
-            border-radius: 10px;
         }
     </style>
 </head>
@@ -82,12 +68,13 @@
     </div>
 </div>
 
-<a href="/inspeksi/wizard" class="btn btn-secondary mb-3">
-    ← Kembali
-</a>
+<div class="container mb-3">
+    <a href="/inspeksi/wizard" class="btn btn-secondary">
+        ← Kembali
+    </a>
+</div>
 
 <div class="container">
-
     <div class="row">
 
         <!-- FORM -->
@@ -97,11 +84,9 @@
                 <h5 class="mb-3 text-primary">Tambah Kategori</h5>
 
                 <form id="formKategori">
-                    <input type="text"
-                           name="nama_kategori"
+                    <input type="text" name="nama_kategori"
                            class="form-control mb-3"
-                           placeholder="Masukkan nama kategori..."
-                           required>
+                           placeholder="Masukkan nama kategori..." required>
 
                     <button class="btn btn-primary w-100">
                         + Simpan Kategori
@@ -128,15 +113,9 @@
                     <tbody id="tableKategori">
                         @foreach($kategoris as $k)
                         <tr id="row-{{ $k->id }}">
-    <td>{{ $k->nama_kategori }}</td>
-    <td>
-        <button class="btn btn-danger btn-sm btn-delete" data-id="{{ $k->id }}">
-            Hapus
-        </button>
-    </td>
-</tr>
+                            <td>{{ $k->nama_kategori }}</td>
                             <td class="text-center">
-                                <button class="btn btn-sm btn-outline-danger btn-delete"
+                                <button class="btn btn-danger btn-sm btn-delete"
                                         data-id="{{ $k->id }}">
                                     Hapus
                                 </button>
@@ -151,12 +130,12 @@
         </div>
 
     </div>
-
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 
 <script>
+// setup CSRF
 $.ajaxSetup({
     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
 });
@@ -175,27 +154,24 @@ $(document).on('click', '.btn-delete', function(){
 
     let id = $(this).data('id');
 
-    if(!confirm('Yakin mau hapus?')) return;
+    if(!confirm('Yakin mau hapus data ini?')) return;
 
     $.ajax({
         url: '/inspeksi/kategori-delete/' + id,
         type: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function(res){
-            $('#row-'+id).remove();
-            alert('Berhasil dihapus');
+        success: function(){
+            $('#row-'+id).fadeOut(300, function(){
+                $(this).remove();
+            });
+            alert('✅ Berhasil dihapus');
         },
         error: function(xhr){
             console.log(xhr.responseText);
-            alert('Gagal hapus');
+            alert('❌ Gagal hapus (cek route/controller)');
         }
     });
 
-
 });
-
 </script>
 
 </body>
