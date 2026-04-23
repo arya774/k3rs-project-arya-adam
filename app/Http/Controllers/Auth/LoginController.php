@@ -10,21 +10,19 @@ use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
-    /**
-     * ================= LOGIN =================
-     */
+    // ================= LOGIN =================
     public function login(Request $request)
     {
-        // ✅ VALIDASI
+        // VALIDASI
         $request->validate([
             'nip' => ['required', 'string'],
             'password' => ['required', 'string', 'min:4'],
         ]);
 
-        // 🔍 CEK USER
+        // CEK USER
         $user = User::where('nip', $request->nip)->first();
 
-        // 🔥 AUTO REGISTER (OPSIONAL)
+        // AUTO REGISTER (kalau user belum ada)
         if (!$user) {
             $user = User::create([
                 'name' => 'User ' . $request->nip,
@@ -35,30 +33,28 @@ class LoginController extends Controller
             Auth::login($user);
             $request->session()->regenerate();
 
-            return redirect()->route('inspeksi.dashboard')
-                ->with('success', 'User baru berhasil dibuat');
+            return redirect()->route('dashboard')
+                ->with('success', 'User baru berhasil dibuat & login');
         }
 
-        // 🔐 LOGIN (PAKAI ATTEMPT)
+        // LOGIN NORMAL
         if (Auth::attempt([
             'nip' => $request->nip,
             'password' => $request->password
         ])) {
             $request->session()->regenerate();
 
-            return redirect()->route('inspeksi.dashboard')
+            return redirect()->route('dashboard')
                 ->with('success', 'Login berhasil');
         }
 
-        // ❌ GAGAL LOGIN
+        // LOGIN GAGAL
         return back()->withErrors([
             'login' => 'NIP atau password salah'
         ])->withInput();
     }
 
-    /**
-     * ================= LOGOUT =================
-     */
+    // ================= LOGOUT =================
     public function logout(Request $request)
     {
         Auth::logout();

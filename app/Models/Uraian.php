@@ -31,16 +31,14 @@ class Uraian extends Model
     protected $table = 'uraian';
     protected $fillable = ['kategori_id', 'nama_uraian'];
 
-    // Relasi ke Kategori
     public function kategori()
-    {
-        return $this->belongsTo(Kategori::class, 'kategori_id', 'id');
-    }
-
-
-    // Relasi ke SubUraian
-    public function subUraian()
 {
-    return $this->hasMany(SubUraian::class);
+    return $this->belongsTo(Kategori::class, 'kategori_id');
 }
+
+public function subUraian()
+{
+    return $this->hasMany(SubUraian::class, 'uraian_id');
+}
+
 }

@@ -1,3 +1,17 @@
+/* RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* BODY */
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+}
+
 /* SIDEBAR */
 .sidebar {
     width: 220px;
@@ -6,6 +20,8 @@
     color: white;
     padding-top: 10px;
     position: fixed;
+    top: 0;
+    left: 0;
 }
 
 /* LOGO */
@@ -16,7 +32,7 @@
 }
 
 .logo-img {
-    width: 80px;
+    width: 70px;
     background: white;
     border-radius: 50%;
     padding: 5px;
@@ -33,55 +49,36 @@
     padding: 10px 20px;
     color: white;
     text-decoration: none;
+    border-radius: 8px;
+    transition: 0.3s;
 }
 
 .sidebar a:hover {
     background: rgba(255,255,255,0.2);
 }
 
-/* CONTENT */
+/* CONTENT UTAMA */
 .main-content {
     margin-left: 220px;
-    width: 100%;
+    padding: 30px;
 }
 
-/* RESET */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', sans-serif;
+/* BOX FORM / KONTEN */
+.content-box {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
 }
 
-/* BACKGROUND */
-body {
-    height: 100vh;
-    background: linear-gradient(135deg, #4facfe, #00f2fe);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* JUDUL */
+h1, h2, h3, label {
+    color: #000;
 }
 
-/* CARD LOGIN */
-.login-container {
-    background: #ffffff;
-    padding: 40px;
-    width: 350px;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    text-align: center;
-}
-
-/* TITLE */
-.login-container h2 {
-    margin-bottom: 20px;
-    color: #333;
-}
-
-/* INPUT */
+/* INPUT GROUP */
 .input-group {
     margin-bottom: 15px;
-    text-align: left;
 }
 
 .input-group label {
@@ -89,7 +86,9 @@ body {
     color: #555;
 }
 
-.input-group input {
+.input-group input,
+.input-group textarea,
+.input-group select {
     width: 100%;
     padding: 10px;
     margin-top: 5px;
@@ -97,16 +96,24 @@ body {
     border: 1px solid #ccc;
     outline: none;
     transition: 0.3s;
+    background: #fff;
+    color: #000;
 }
 
-.input-group input:focus {
+.input-group input:focus,
+.input-group textarea:focus {
     border-color: #4facfe;
 }
 
+/* TEXTAREA */
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
 /* BUTTON */
-.btn-login {
-    width: 100%;
-    padding: 10px;
+.btn-custom {
+    padding: 10px 20px;
     background: #4facfe;
     border: none;
     color: white;
@@ -116,21 +123,10 @@ body {
     transition: 0.3s;
 }
 
-.btn-login:hover {
+.btn-custom:hover {
     background: #00c6ff;
 }
 
-/* REMEMBER */
-.remember {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-    font-size: 13px;
-}
-
-.remember input {
-    margin-right: 5px;
-}
 /* ERROR TEXT */
 .error-text {
     color: red;
@@ -145,7 +141,7 @@ body {
     animation: shake 0.3s;
 }
 
-/* SHAKE ANIMATION */
+/* ANIMASI */
 @keyframes shake {
     0% { transform: translateX(0); }
     25% { transform: translateX(-5px); }
@@ -154,7 +150,6 @@ body {
     100% { transform: translateX(0); }
 }
 
-/* FADE IN */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -165,68 +160,8 @@ body {
         transform: translateY(0);
     }
 }
-/* ERROR TEXT */
-.error-text {
-    color: red;
-    font-size: 13px;
-    margin-top: 5px;
-    animation: fadeIn 0.5s ease;
-}
 
-/* INPUT ERROR */
-.input-error {
-    border: 2px solid red !important;
-    animation: shake 0.3s;
-}
-
-/* SHAKE ANIMATION */
-@keyframes shake {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    50% { transform: translateX(5px); }
-    75% { transform: translateX(-5px); }
-    100% { transform: translateX(0); }
-}
-
-/* FADE IN */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-5px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-body {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
-}
-
-/* Sidebar */
-.sidebar {
-    background: #1e293b;
-    color: white;
-    height: 100vh;
-    border-radius: 0 20px 20px 0;
-    padding: 20px;
-}
-
-.sidebar a {
-    color: #cbd5f5;
-    display: block;
-    padding: 10px;
-    border-radius: 10px;
-    transition: 0.3s;
-}
-
-.sidebar a:hover {
-    background: rgba(255,255,255,0.1);
-    color: white;
-}
-
-/* Card Dashboard */
+/* CARD DASHBOARD */
 .card-custom {
     border: none;
     border-radius: 20px;
@@ -240,7 +175,7 @@ body {
     transform: translateY(-5px);
 }
 
-/* Warna Card */
+/* WARNA CARD */
 .bg-blue {
     background: linear-gradient(135deg, #3b82f6, #6366f1);
 }
@@ -256,30 +191,3 @@ body {
 .bg-yellow {
     background: linear-gradient(135deg, #facc15, #fbbf24);
 }
-
-/* Button */
-.btn-custom {
-    border-radius: 10px;
-    padding: 8px 15px;
-    font-size: 14px;
-    transition: 0.3s;
-}
-
-.btn-custom:hover {
-    transform: scale(1.05);
-}
-
-/* Container putih */
-.content-box {
-    background: white;
-    border-radius: 20px;
-    padding: 25px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-}
-.logo-img {
-    width: 70px;
-    background: white;
-    border-radius: 50%;
-    padding: 5px;
-}
-<h1 style="color:red">TES NAVIGATION</h1>

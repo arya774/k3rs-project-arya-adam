@@ -53,10 +53,6 @@
             border-radius: 10px;
             background:white;
         }
-
-        .btn-primary{
-            background:#0d6efd;
-        }
     </style>
 </head>
 
@@ -66,12 +62,6 @@
 <div class="sidebar">
     <h5>INSPEKSI K3</h5>
     <hr>
-
-    <a href="/inspeksi/kategori">Kategori</a>
-    <a href="/inspeksi/uraian">Uraian</a>
-    <a href="/inspeksi/sub-uraian">Sub Uraian</a>
-    <a href="/inspeksi/wizard">Form Inspeksi</a>
-    <a href="/inspeksi/dashboard">Dashboard</a>
 </div>
 
 <!-- CONTENT -->
@@ -79,27 +69,14 @@
 
     <h3 class="mb-4">Form Inspeksi K3 RSUD</h3>
 
-<h5>Kategori</h5>
-<form id="formKategori">
-    <input type="text" name="nama_kategori" class="form-control mb-2" required>
-    <button class="btn btn-primary w-100">Tambah</button>
-</form>
-<h5>Uraian</h5>
-<form id="formUraian">
-    <select name="kategori_id" id="kategori" class="form-select mb-2" required>
-        <option value="">Pilih Kategori</option>
-        @foreach($kategoris as $k)
-            <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
-        @endforeach
-    </select>
+    <!-- FORM -->
+    <form id="formInspeksi" method="POST" action="/inspeksi/store">
+        @csrf
 
         <!-- STEP 1 -->
         <div class="step active card card-glass p-3" id="step1">
 
-            <h5 class="mb-3">Data Inspeksi</h5>
-
             <div class="row">
-
                 <div class="col-md-6 mb-2">
                     <label>Tanggal</label>
                     <input type="date" id="tanggal" name="tanggal" class="form-control">
@@ -109,7 +86,6 @@
                     <label>Ruangan</label>
                     <input type="text" name="ruangan" class="form-control">
                 </div>
-
             </div>
 
             <hr>
@@ -152,8 +128,8 @@
 
             @foreach($kategoris as $k)
             <div class="kategori-box" id="kategori-{{ $k->id }}" style="display:none;">
-
                 <div class="card mb-3 p-3">
+
                     <b class="text-primary">{{ $k->nama_kategori }}</b>
                     <hr>
 
@@ -185,7 +161,6 @@
                     @endforeach
 
                 </div>
-
             </div>
             @endforeach
 
@@ -206,15 +181,15 @@
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+
 function showStep(step){
     $('.step').removeClass('active');
     $('#step'+step).addClass('active');
 }
 
-// tanggal
+// tanggal otomatis
 $('#tanggal').val(new Date().toISOString().split('T')[0]);
 
 // filter kategori
@@ -231,14 +206,13 @@ function clearK3rs(){ padK3rs.clear(); }
 
 // submit
 $('#formInspeksi').submit(function(){
-
     $('#paraf_k3rs').val(padK3rs.toDataURL());
     $('#paraf_ruangan').val(padRuangan.toDataURL());
 
     $('#btnSimpan').prop('disabled',true).text('Menyimpan...');
     $('#loading').removeClass('d-none');
-
 });
+
 </script>
 
 </body>

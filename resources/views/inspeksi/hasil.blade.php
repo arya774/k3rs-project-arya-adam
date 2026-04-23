@@ -5,17 +5,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        body {
-            background: #f8f9fa;
-        }
+        body { background: #f8f9fa; }
 
-        .card {
-            border-radius: 10px;
-        }
-
-        table {
-            width: 100%;
-        }
+        .card { border-radius: 10px; }
 
         th {
             background-color: #0d6efd;
@@ -23,19 +15,10 @@
             text-align: center;
         }
 
-        td {
-            vertical-align: middle;
-        }
+        td { vertical-align: middle; }
 
-        .ya {
-            color: green;
-            font-weight: bold;
-        }
-
-        .tidak {
-            color: red;
-            font-weight: bold;
-        }
+        .ya { color: green; font-weight: bold; }
+        .tidak { color: red; font-weight: bold; }
 
         .rekap-box {
             background: white;
@@ -44,9 +27,7 @@
             box-shadow: 0 0 10px rgba(0,0,0,0.05);
         }
 
-        .ttd-box {
-            margin-top: 50px;
-        }
+        .ttd-box { margin-top: 50px; }
 
         .ttd-img-box {
             height: 110px;
@@ -71,9 +52,7 @@
             font-weight: bold;
         }
 
-        .ttd-label {
-            font-weight: bold;
-        }
+        .ttd-label { font-weight: bold; }
     </style>
 </head>
 
@@ -81,26 +60,33 @@
 
 <div class="container mt-4">
 
+    <!-- HEADER -->
     <div class="card shadow-sm p-3">
         <h3 class="text-center mb-3">Hasil Inspeksi K3 RSUD Kota Bogor</h3>
 
         <div class="row mb-3">
             <div class="col-md-6">
-                <p><b>Tanggal:</b> {{ $inspeksi->tanggal }}</p>
-                <p><b>Ruangan:</b> {{ $inspeksi->ruangan }}</p>
+                <p><b>Tanggal:</b> {{ $inspeksi->tanggal ?? '-' }}</p>
+                <p><b>Ruangan:</b> {{ $inspeksi->ruangan ?? '-' }}</p>
             </div>
-            <div class="col-md-6 text-md-end">
-                <a href="{{ route('inspeksi.cetak', $inspeksi->id) }}" class="btn btn-primary btn-sm" target="_blank">
+
+            <div class="col-md-6 text-end">
+                <a href="{{ route('inspeksi.cetak', $inspeksi->id) }}"
+                   class="btn btn-primary btn-sm" target="_blank">
                     🖨 Cetak PDF
                 </a>
-                <a href="{{ route('inspeksi.wizard') }}" class="btn btn-secondary btn-sm">
+
+                <a href="{{ route('inspeksi.wizard') }}"
+                   class="btn btn-secondary btn-sm">
                     ← Kembali
                 </a>
             </div>
         </div>
 
+        <!-- TABLE -->
         <div class="table-responsive">
             <table class="table table-bordered">
+
                 <thead>
                     <tr>
                         <th>No</th>
@@ -111,30 +97,30 @@
                         <th>Catatan</th>
                     </tr>
                 </thead>
+
                 <tbody>
-
-                    @forelse($detail as $i => $d)
-                        <tr>
-                            <td class="text-center">{{ $i + 1 }}</td>
-                            <td>{{ $d->subUraian->uraian->kategori->nama_kategori ?? '-' }}</td>
-                            <td>{{ $d->subUraian->uraian->nama_uraian ?? '-' }}</td>
-                            <td>{{ $d->subUraian->nama_sub_uraian ?? '-' }}</td>
-                            <td class="text-center">
-                                @if(strtolower($d->nilai) === 'ya')
-                                    <span class="ya">YA</span>
-                                @else
-                                    <span class="tidak">TIDAK</span>
-                                @endif
-                            </td>
-                            <td>{{ $d->catatan ?? '-' }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="text-center">Belum ada data inspeksi</td>
-                        </tr>
-                    @endforelse
-
+                @forelse($detail as $i => $d)
+                    <tr>
+                        <td class="text-center">{{ $i + 1 }}</td>
+                        <td>{{ $d->subUraian->uraian->kategori->nama_kategori ?? '-' }}</td>
+                        <td>{{ $d->subUraian->uraian->nama_uraian ?? '-' }}</td>
+                        <td>{{ $d->subUraian->nama_sub_uraian ?? '-' }}</td>
+                        <td class="text-center">
+                            @if(strtolower($d->nilai) === 'ya')
+                                <span class="ya">YA</span>
+                            @else
+                                <span class="tidak">TIDAK</span>
+                            @endif
+                        </td>
+                        <td>{{ $d->catatan ?? '-' }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center">Belum ada data inspeksi</td>
+                    </tr>
+                @endforelse
                 </tbody>
+
             </table>
         </div>
     </div>
@@ -145,78 +131,75 @@
 
         <div class="row text-center">
             <div class="col-md-3">
-                <p>Total Pertanyaan</p>
-                <h5>{{ $total }}</h5>
+                <p>Total</p>
+                <h5>{{ $total ?? 0 }}</h5>
             </div>
 
             <div class="col-md-3">
-                <p>Jumlah Ya</p>
-                <h5 class="text-success">{{ $ya }}</h5>
+                <p>YA</p>
+                <h5 class="text-success">{{ $ya ?? 0 }}</h5>
             </div>
 
             <div class="col-md-3">
-                <p>Jumlah Tidak</p>
-                <h5 class="text-danger">{{ $tidak }}</h5>
+                <p>TIDAK</p>
+                <h5 class="text-danger">{{ $tidak ?? 0 }}</h5>
             </div>
 
             <div class="col-md-3">
                 <p>Persentase</p>
-                <h5>{{ number_format($persentase, 2) }}%</h5>
+                <h5>{{ number_format($persentase ?? 0, 2) }}%</h5>
             </div>
         </div>
     </div>
 
-  <!-- TANDA TANGAN -->
-<div class="ttd-box row text-center">
+    <!-- ================= TANDA TANGAN FIX TOTAL ================= -->
+    <div class="ttd-box row text-center mt-5">
 
-    <!-- K3RS -->
-    <div class="col-md-6">
-        <p class="ttd-label">Petugas K3RS</p>
+        <!-- K3RS -->
+        <div class="col-md-6">
+            <p class="ttd-label">Petugas K3RS</p>
 
-        <div class="ttd-img-box">
-            @php
-                $file_k3rs = public_path('storage/paraf/' . trim($inspeksi->paraf_petugas_k3rs));
-            @endphp
+            <div class="ttd-img-box">
+                @php
+                    $ttdK3rs = $inspeksi->paraf_petugas_k3rs ?? null;
+                    $pathK3rs = $ttdK3rs ? storage_path('app/public/paraf/'.$ttdK3rs) : null;
+                @endphp
 
-            @if(!empty($inspeksi->paraf_petugas_k3rs) && file_exists($file_k3rs))
-                <img src="{{ asset('storage/paraf/' . trim($inspeksi->paraf_petugas_k3rs)) }}" class="ttd-img">
-            @else
-                <span class="text-danger">TTD tidak ditemukan</span>
-                <br>
-                <small>{{ $inspeksi->paraf_petugas_k3rs }}</small>
-            @endif
+                @if($ttdK3rs && file_exists($pathK3rs))
+                    <img src="{{ asset('storage/paraf/'.$ttdK3rs) }}" class="ttd-img">
+                @else
+                    <span class="text-danger">TTD tidak tersedia</span>
+                @endif
+            </div>
+
+            <div class="ttd-line"></div>
+            <div class="ttd-name">{{ $inspeksi->nama_petugas_k3rs ?? '-' }}</div>
         </div>
 
-        <div class="ttd-line"></div>
+        <!-- RUANGAN -->
+        <div class="col-md-6">
+            <p class="ttd-label">Petugas Ruangan</p>
 
-        <div class="ttd-name">
-            {{ $inspeksi->nama_petugas_k3rs ?? '-' }}
-        </div>
-    </div>
+            <div class="ttd-img-box">
+                @php
+                    $ttdRuangan = $inspeksi->paraf_petugas_ruangan ?? null;
+                    $pathRuangan = $ttdRuangan ? storage_path('app/public/paraf/'.$ttdRuangan) : null;
+                @endphp
 
-    <!-- RUANGAN -->
-    <div class="col-md-6">
-        <p class="ttd-label">Petugas Ruangan</p>
+                @if($ttdRuangan && file_exists($pathRuangan))
+                    <img src="{{ asset('storage/paraf/'.$ttdRuangan) }}" class="ttd-img">
+                @else
+                    <span class="text-danger">TTD tidak tersedia</span>
+                @endif
+            </div>
 
-        <div class="ttd-img-box">
-            @php
-                $file_ruangan = public_path('storage/paraf/' . trim($inspeksi->paraf_petugas_ruangan));
-            @endphp
-
-            @if(!empty($inspeksi->paraf_petugas_ruangan) && file_exists($file_ruangan))
-                <img src="{{ asset('storage/paraf/' . trim($inspeksi->paraf_petugas_ruangan)) }}" class="ttd-img">
-            @else
-                <span class="text-danger">TTD tidak ditemukan</span>
-                <br>
-                <small>{{ $inspeksi->paraf_petugas_ruangan }}</small>
-            @endif
+            <div class="ttd-line"></div>
+            <div class="ttd-name">{{ $inspeksi->nama_petugas_ruangan ?? '-' }}</div>
         </div>
 
-        <div class="ttd-line"></div>
-
-        <div class="ttd-name">
-            {{ $inspeksi->nama_petugas_ruangan ?? '-' }}
-        </div>
     </div>
 
 </div>
+
+</body>
+</html>
