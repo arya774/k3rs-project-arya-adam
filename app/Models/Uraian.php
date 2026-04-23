@@ -37,9 +37,10 @@ class Uraian extends Model
         return $this->belongsTo(Kategori::class, 'kategori_id', 'id');
     }
 
+
     // Relasi ke SubUraian
     public function subUraian()
-    {
-        return $this->hasMany(SubUraian::class, 'uraian_id', 'id');
-    }
+{
+    return $this->hasMany(SubUraian::class);
+}
 }

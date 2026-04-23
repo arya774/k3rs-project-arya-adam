@@ -39,10 +39,9 @@ class Kategori extends Model
      * Kategori -> Uraian
      */
     public function uraian()
-    {
-        return $this->hasMany(Uraian::class, 'kategori_id', 'id');
-    }
-
+{
+    return $this->hasMany(Uraian::class);
+}
     /**
      * Kategori -> SubUraian (via Uraian)
      */
