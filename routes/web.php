@@ -5,7 +5,40 @@ use App\Http\Controllers\InspeksiController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\UraianController;
+use App\Http\Controllers\MasterDataController;
 
+Route::middleware('auth')->prefix('inspeksi')->group(function () {
+    Route::get('/inspeksi/kategori', function () {
+    return redirect('/inspeksi/master-data');
+});
+
+Route::get('/inspeksi/uraian', function () {
+    return redirect('/inspeksi/master-data');
+});
+
+Route::get('/inspeksi/sub-uraian', function () {
+    return redirect('/inspeksi/master-data');
+});
+
+    Route::get('/master-data', [MasterDataController::class, 'index'])->name('master.data');
+
+    Route::post('/master-data/kategori', [MasterDataController::class, 'storeKategori'])->name('master.kategori');
+
+    Route::post('/master-data/uraian', [MasterDataController::class, 'storeUraian'])->name('master.uraian');
+
+    Route::post('/master-data/sub-uraian', [MasterDataController::class, 'storeSubUraian'])->name('master.sub');
+
+    Route::get('/inspeksi/get-uraian/{id}', [MasterDataController::class, 'getUraian']);
+
+    Route::post('/master-data/kategori', [MasterDataController::class, 'storeKategori'])->name('master.kategori');
+
+    Route::post('/master-data/uraian', [MasterDataController::class, 'storeUraian'])->name('master.uraian');
+
+    Route::post('/master-data/sub-uraian', [MasterDataController::class, 'storeSubUraian'])->name('master.sub');
+
+    // AJAX
+    Route::get('/get-uraian/{id}', [MasterDataController::class, 'getUraian']);
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +74,11 @@ Route::delete('/inspeksi/kategori-delete/{id}', [InspeksiController::class, 'del
 Route::get('/inspeksi/get-sub-all', [InspeksiController::class, 'getSubAll']);
 Route::post('/kategori', [InspeksiController::class, 'storeKategori']);
 Route::prefix('inspeksi')->group(function () {
+
+Route::get('/master-data', [MasterDataController::class, 'index'])->name('master.data');
+Route::post('/master-data/kategori', [MasterDataController::class, 'storeKategori']);
+Route::post('/master-data/uraian', [MasterDataController::class, 'storeUraian']);
+Route::post('/master-data/sub-uraian', [MasterDataController::class, 'storeSubUraian']);
 
 });
 

@@ -1,90 +1,48 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Sub Uraian</title>
+@extends('layouts.app')
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+@section('title', 'Sub Uraian')
 
-    <style>
-        body{
-            background: #f4f8ff;
-        }
+@section('content')
 
-        .card-glass{
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            border: none;
-        }
+<div class="container-fluid">
 
-        .header-blue{
-            background: linear-gradient(135deg,#0d6efd,#0a58ca);
-            color: white;
-            padding: 15px;
-            border-radius: 15px 15px 0 0;
-        }
+    <h4 class="mb-4">🧩 MASTER SUB URAIAN</h4>
 
-        .list-item{
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
+    <div class="row">
 
-        .list-item:hover{
-            background: #f0f6ff;
-        }
+        <!-- FORM -->
+        <div class="col-md-4">
+            <div class="card shadow p-4">
 
-        .tag-box{
-            background: #e7f1ff;
-            padding: 6px 10px;
-            border-radius: 8px;
-            margin-bottom: 5px;
-            display: flex;
-            justify-content: space-between;
-        }
-    </style>
-</head>
+                <h5 class="text-primary mb-3">Tambah Sub Uraian</h5>
 
-<body class="p-4">
+                <label>Pilih Uraian</label>
+                <select id="uraian" class="form-select mb-3"></select>
 
-<a href="/inspeksi/wizard" class="btn btn-secondary mb-3">
-    ← Kembali
-</a>
+                <label>Nama Sub Uraian</label>
+                <input type="text" id="nama_sub"
+                       class="form-control mb-2"
+                       placeholder="Ketik lalu tekan ENTER">
 
-<div class="container">
+                <!-- PREVIEW -->
+                <div id="previewList" class="mb-3"></div>
 
-    <div class="card card-glass">
+                <button id="btnSub" class="btn btn-primary w-100">
+                    + Simpan Semua
+                </button>
 
-        <div class="header-blue">
-            <h4 class="mb-0">Sub Uraian Management</h4>
+            </div>
         </div>
 
-        <div class="p-4">
+        <!-- LIST -->
+        <div class="col-md-8">
+            <div class="card shadow p-4">
 
-            <!-- SELECT -->
-            <label class="form-label">Pilih Uraian</label>
-            <select id="uraian" class="form-select mb-3"></select>
+                <h5 class="text-primary mb-3">Daftar Sub Uraian</h5>
 
-            <!-- INPUT -->
-            <label class="form-label">Nama Sub Uraian</label>
-            <input type="text" id="nama_sub" class="form-control mb-2" placeholder="Ketik lalu tekan ENTER">
+                <div id="listSub"></div>
 
-            <!-- PREVIEW -->
-            <div id="previewList" class="mb-3"></div>
-
-            <button id="btnSub" class="btn btn-primary w-100 mb-3">
-                + Simpan Semua
-            </button>
-
-            <hr>
-
-            <h6 class="mb-3">List Sub Uraian</h6>
-
-            <div id="listSub"></div>
-
+            </div>
         </div>
 
     </div>
@@ -94,15 +52,15 @@
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 
 <script>
+
+// CSRF
 $.ajaxSetup({
     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
 });
 
 let subList = [];
 
-// ======================
-// ENTER = TAMBAH LIST 🔥
-// ======================
+// ENTER = TAMBAH LIST
 $('#nama_sub').keypress(function(e){
 
     if(e.which == 13){
@@ -120,16 +78,14 @@ $('#nama_sub').keypress(function(e){
 
 });
 
-// ======================
-// PREVIEW LIST
-// ======================
+// PREVIEW
 function renderPreview(){
 
     let html = '';
 
     subList.forEach((item,index)=>{
         html += `
-        <div class="tag-box">
+        <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded mb-2">
             <span>${item}</span>
             <button class="btn btn-sm btn-danger" onclick="removeItem(${index})">x</button>
         </div>`;
@@ -138,17 +94,13 @@ function renderPreview(){
     $('#previewList').html(html);
 }
 
-// ======================
-// HAPUS ITEM SEBELUM SIMPAN
-// ======================
+// HAPUS DARI LIST
 function removeItem(index){
     subList.splice(index,1);
     renderPreview();
 }
 
-// ======================
 // LOAD URAIAN
-// ======================
 function loadUraian(){
 
     $.get('/inspeksi/get-uraian-all', function(data){
@@ -164,9 +116,7 @@ function loadUraian(){
 
 }
 
-// ======================
-// LOAD DATA SUB
-// ======================
+// LOAD SUB
 function loadSub(){
 
     $.get('/inspeksi/get-sub-all', function(data){
@@ -175,7 +125,7 @@ function loadSub(){
 
         data.forEach(s=>{
             html += `
-            <div class="list-item">
+            <div class="d-flex justify-content-between align-items-center border-bottom py-2">
                 <div>${s.nama_sub_uraian}</div>
                 <button class="btn btn-sm btn-danger btn-hapus" data-id="${s.id}">
                     Hapus
@@ -188,9 +138,7 @@ function loadSub(){
 
 }
 
-// ======================
-// SIMPAN 🔥 MULTI DATA
-// ======================
+// SIMPAN MULTI
 $('#btnSub').click(function(){
 
     let uraian = $('#uraian').val();
@@ -208,7 +156,7 @@ $('#btnSub').click(function(){
     $.post('/inspeksi/master/suburaian',{
         uraian_id: uraian,
         nama_sub_uraian: subList
-    },function(res){
+    },function(){
 
         subList = [];
         renderPreview();
@@ -221,9 +169,7 @@ $('#btnSub').click(function(){
 
 });
 
-// ======================
 // DELETE
-// ======================
 $(document).on('click','.btn-hapus',function(){
 
     let id = $(this).data('id');
@@ -235,22 +181,15 @@ $(document).on('click','.btn-hapus',function(){
         type: 'DELETE',
         success: function(){
             loadSub();
-        },
-        error: function(xhr){
-            console.log(xhr.responseText);
-            alert('Gagal hapus');
         }
     });
 
 });
 
-// ======================
 // INIT
-// ======================
 loadUraian();
 loadSub();
 
 </script>
 
-</body>
-</html>
+@endsection

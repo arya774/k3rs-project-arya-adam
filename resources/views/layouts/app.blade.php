@@ -3,59 +3,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <style>
+body {
+    margin: 0;
+    overflow-x: hidden;
+}
 
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+/* SIDEBAR FIX */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow-y: auto;
+}
+
+/* CONTENT GESER KE KANAN */
+.content {
+    margin-left: 250px;
+    min-height: 100vh;
+}
+
+/* BIAR SCROLL HALUS */
+.content-inner {
+    padding: 20px;
+}
+</style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Aplikasi Inspeksi')</title>
+
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        body {
+            background: #f4f7fb;
+        }
+
+        .sidebar {
+            width: 250px;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #0d6efd, #0a58ca);
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: 0.2s;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .active-menu {
+            background: white !important;
+            color: #0d6efd !important;
+            font-weight: bold;
+        }
+
+        .content-area {
+            flex: 1;
+        }
+    </style>
 </head>
+
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url('/') }}">Inspeksi</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="{{ route('kategori.index') }}">Kategori</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('inspeksi.create') }}">Inspeksi</a></li>
-                </ul>
-            </div>
+
+<!-- SIDEBAR -->
+<div class="sidebar bg-primary text-white p-3">
+
+    <h5>INSPEKSI K3</h5>
+    <hr>
+
+    <a href="{{ route('inspeksi.dashboard') }}"
+       class="nav-link text-white {{ request()->is('inspeksi/dashboard') ? 'fw-bold bg-light text-primary rounded' : '' }}">
+        Dashboard
+    </a>
+
+    <a href="{{ route('inspeksi.wizard') }}"
+       class="nav-link text-white {{ request()->is('inspeksi/wizard') ? 'fw-bold bg-light text-primary rounded' : '' }}">
+        Form Inspeksi
+    </a>
+
+    <hr>
+
+    <strong>Master Data</strong>
+
+    <a href="/inspeksi/kategori"
+       class="nav-link text-white {{ request()->is('inspeksi/kategori') ? 'fw-bold bg-light text-primary rounded' : '' }}">
+        • Kategori
+    </a>
+
+    <a href="/inspeksi/uraian"
+       class="nav-link text-white {{ request()->is('inspeksi/uraian') ? 'fw-bold bg-light text-primary rounded' : '' }}">
+        • Uraian
+    </a>
+
+    <a href="/inspeksi/sub-uraian"
+       class="nav-link text-white {{ request()->is('inspeksi/sub-uraian') ? 'fw-bold bg-light text-primary rounded' : '' }}">
+        • Sub Uraian
+    </a>
+
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+    <nav class="navbar bg-white shadow-sm">
+        <div class="container-fluid">
+            <span class="navbar-brand">Aplikasi Inspeksi K3</span>
         </div>
     </nav>
 
-    <body>
-
-<div class="d-flex">
-
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-
-        <!-- LOGO -->
-        <div class="logo-sidebar">
-            <img src="{{ asset('images/logo_rsud.png') }}" class="logo-img">
-            <div class="logo-text">RSUD Kota Bogor</div>
-        </div>
-
-        <!-- MENU -->
-        <a href="#">Dashboard</a>
-        <a href="{{ route('inspeksi.create') }}">Form Inspeksi</a>
-        <a href="{{ route('kategori.index') }}">Kategori</a>
-
+    <div class="content-inner">
+        @yield('content')
     </div>
 
-    <!-- CONTENT -->
-    <div class="main-content">
+</div>
 
-        <!-- NAVBAR -->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">Inspeksi</a>
-            </div>
+</body>
+
+    <!-- CONTENT -->
+    <div class="content-area">
+
+        <!-- TOPBAR -->
+        <nav class="navbar bg-white shadow-sm px-3">
+            <span class="navbar-brand mb-0 h5">
+                Aplikasi Inspeksi K3
+            </span>
         </nav>
 
-        <div class="container-fluid">
+        <!-- MAIN CONTENT -->
+        <div class="p-4">
             @yield('content')
         </div>
 
@@ -63,13 +147,7 @@
 
 </div>
 
-</body>
-    <div class="container">
-        @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-        @yield('content')
-    </div>
 </body>
 </html>

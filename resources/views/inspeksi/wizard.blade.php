@@ -67,11 +67,27 @@
     <h5>INSPEKSI K3</h5>
     <hr>
 
-    <a href="/inspeksi/kategori">Kategori</a>
-    <a href="/inspeksi/uraian">Uraian</a>
-    <a href="/inspeksi/sub-uraian">Sub Uraian</a>
-    <a href="/inspeksi/wizard">Form Inspeksi</a>
-    <a href="/inspeksi/dashboard">Dashboard</a>
+    <li>
+    <a data-bs-toggle="collapse" href="#masterMenu">Master Data</a>
+
+    <div class="collapse" id="masterMenu">
+        <ul>
+
+            <li>
+                <a href="/inspeksi/master-data?kategori">Kategori</a>
+            </li>
+
+            <li>
+                <a href="/inspeksi/master-data?uraian">Uraian</a>
+            </li>
+
+            <li>
+                <a href="/inspeksi/master-data?sub">Sub Uraian</a>
+            </li>
+
+        </ul>
+    </div>
+</li>
 </div>
 
 <!-- CONTENT -->
@@ -207,6 +223,7 @@
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 function showStep(step){
