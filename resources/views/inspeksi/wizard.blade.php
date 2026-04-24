@@ -62,31 +62,6 @@
 <div class="sidebar">
     <h5>INSPEKSI K3</h5>
     <hr>
-<<<<<<< HEAD
-
-    <li>
-    <a data-bs-toggle="collapse" href="#masterMenu">Master Data</a>
-
-    <div class="collapse" id="masterMenu">
-        <ul>
-
-            <li>
-                <a href="/inspeksi/master-data?kategori">Kategori</a>
-            </li>
-
-            <li>
-                <a href="/inspeksi/master-data?uraian">Uraian</a>
-            </li>
-
-            <li>
-                <a href="/inspeksi/master-data?sub">Sub Uraian</a>
-            </li>
-
-        </ul>
-    </div>
-</li>
-=======
->>>>>>> 4aa0e7687ca7b8264742e1bd6a4c2633dd11a429
 </div>
 
 <!-- CONTENT -->
@@ -95,7 +70,7 @@
     <h3 class="mb-4">Form Inspeksi K3 RSUD</h3>
 
     <!-- FORM -->
-    <form id="formInspeksi" method="POST" action="/inspeksi/store">
+   <form id="formInspeksi" method="POST" action="{{ route('inspeksi.store') }}">>
         @csrf
 
         <!-- STEP 1 -->
@@ -206,11 +181,6 @@
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
-<<<<<<< HEAD
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-=======
->>>>>>> 4aa0e7687ca7b8264742e1bd6a4c2633dd11a429
 
 <script>
 

@@ -14,6 +14,7 @@ use App\Models\Kategori;
 use App\Models\Uraian;
 use App\Models\SubUraian;
 
+
 class InspeksiController extends Controller
 {
     // ============================
@@ -57,14 +58,44 @@ public function dashboard()
     // WIZARD
     // ============================
     public function wizard()
-    {
-        $kategoris = Kategori::with(['uraian.subUraian'])
-            ->orderBy('nama_kategori')
-            ->get();
+{
+    $kategoris = Kategori::with('uraian.subUraian')->get();
 
-        return view('inspeksi.wizard', compact('kategoris'));
+    return view('inspeksi.wizard', compact('kategoris'));
+}
+
+
+
+    public function store(Request $request)
+{
+    $request->validate([
+        'tanggal' => 'required',
+        'ruangan' => 'required',
+        'nama_petugas_k3rs' => 'required',
+        'nama_petugas_ruangan' => 'required',
+    ]);
+
+    $inspeksi = Inspeksi::create([
+        'tanggal' => $request->tanggal,
+        'ruangan' => $request->ruangan,
+        'nama_petugas_k3rs' => $request->nama_petugas_k3rs,
+        'nama_petugas_ruangan' => $request->nama_petugas_ruangan,
+    ]);
+
+    if ($request->has('nilai')) {
+        foreach ($request->nilai as $subId => $nilai) {
+
+            DetailInspeksi::create([
+                'inspeksi_id' => $inspeksi->id,
+                'sub_uraian_id' => $subId,
+                'nilai' => $nilai ?? null,
+                'catatan' => $request->catatan_multi[$subId] ?? null
+            ]);
+        }
     }
 
+    return redirect()->route('inspeksi.hasil', $inspeksi->id);
+}
     // ============================
     // EDIT INSPEKSI (BARU)
     // ============================
@@ -110,18 +141,18 @@ public function dashboard()
     // ============================
     public function deleteKategori($id)
     {
-        $kategori = Kategori::with('uraian.subUraian')->find($id);
+        $kategoris = Kategori::with('uraian.subUraian')->find($id);
 
-        if (!$kategori) {
+        if (!$kategoris) {
             return response()->json(['message' => 'Not found'], 404);
         }
 
-        foreach ($kategori->uraian as $u) {
+        foreach ($kategoris->uraian as $u) {
             $u->subUraian()->delete();
         }
 
-        $kategori->uraian()->delete();
-        $kategori->delete();
+        $kategoris->uraian()->delete();
+        $kategoris->delete();
 
         return response()->json(['success' => true]);
     }
@@ -245,71 +276,38 @@ public function dashboard()
     // ============================
     // STORE INSPEKSI
     // ============================
-    public function storeInspeksi(Request $request)
+   public function storeInspeksi(Request $request)
 {
     $request->validate([
-        'tanggal' => 'required|date',
-        'ruangan' => 'required|string',
-        'nama_petugas_k3rs' => 'required|string',
-        'nama_petugas_ruangan' => 'required|string',
+        'tanggal' => 'required',
+        'ruangan' => 'required',
+        'nama_petugas_k3rs' => 'required',
+        'nama_petugas_ruangan' => 'required',
     ]);
 
-    $inspeksi = DB::transaction(function () use ($request) {
+    $inspeksi = Inspeksi::create([
+        'tanggal' => $request->tanggal,
+        'ruangan' => $request->ruangan,
+        'nama_petugas_k3rs' => $request->nama_petugas_k3rs,
+        'nama_petugas_ruangan' => $request->nama_petugas_ruangan,
+        'paraf_petugas_k3rs' => $request->paraf_petugas_k3rs,
+        'paraf_petugas_ruangan' => $request->paraf_petugas_ruangan,
+    ]);
 
-        $data = Inspeksi::create([
-            'tanggal' => $request->tanggal,
-            'ruangan' => $request->ruangan,
-            'nama_petugas_k3rs' => $request->nama_petugas_k3rs,
-            'nama_petugas_ruangan' => $request->nama_petugas_ruangan,
-        ]);
+    if ($request->nilai) {
+        foreach ($request->nilai as $subId => $nilai) {
 
-        if ($request->has('nilai')) {
-
-            foreach ($request->nilai as $subId => $nilai) {
-
-                if ($nilai === null || $nilai === '') continue;
-
-                // 🔥 AMBIL CATATAN MULTI
-                $catatanText = $request->catatan_multi[$subId] ?? null;
-
-                if ($catatanText) {
-
-                    // pecah berdasarkan ENTER
-                    $items = explode("\n", $catatanText);
-
-                    foreach ($items as $item) {
-
-                        $item = trim($item);
-
-                        if ($item != '') {
-
-                            DetailInspeksi::create([
-                                'inspeksi_id' => $data->id,
-                                'sub_uraian_id' => $subId,
-                                'nilai' => strtolower($nilai),
-                                'catatan' => $item
-                            ]);
-                        }
-                    }
-
-                } else {
-
-                    // kalau tidak ada catatan
-                    DetailInspeksi::create([
-                        'inspeksi_id' => $data->id,
-                        'sub_uraian_id' => $subId,
-                        'nilai' => strtolower($nilai),
-                        'catatan' => null
-                    ]);
-                }
-            }
+            DetailInspeksi::create([
+                'inspeksi_id' => $inspeksi->id,
+                'sub_uraian_id' => $subId,
+                'nilai' => $nilai,
+                'catatan' => $request->catatan_multi[$subId] ?? null
+            ]);
         }
-
-        return $data;
-    });
+    }
 
     return redirect()->route('inspeksi.hasil', $inspeksi->id)
-        ->with('success', 'Inspeksi berhasil disimpan!');
+        ->with('success', 'Inspeksi berhasil disimpan');
 }
 
     // ============================
