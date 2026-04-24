@@ -45,6 +45,7 @@ class Kategori extends Model
     /**
      * Kategori -> SubUraian (via Uraian)
      */
+    
     public function subUraian()
     {
         return $this->hasManyThrough(

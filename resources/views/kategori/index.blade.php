@@ -1,95 +1,133 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Master Data Kategori / Uraian / Sub-Uraian</title>
+    <title>Master Data</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="container mt-4">
 
-    <h2>Master Data Kategori / Uraian / Sub-Uraian</h2>
+    <h2 class="mb-4">Master Data Kategori / Uraian / Sub-Uraian</h2>
 
-    {{-- ========================= --}}
-    {{-- 1. Tambah Kategori --}}
-    {{-- ========================= --}}
-    <form action="{{ route('master.store', ['type' => 'kategori']) }}" method="POST" class="mb-3">
-        @csrf
-        <div class="input-group mb-2">
-            <input type="text" name="nama_kategori" class="form-control" placeholder="Nama Kategori" required>
-            <button class="btn btn-primary" type="submit">Tambah Kategori</button>
+    {{-- ALERT --}}
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
+
+    {{-- ================= TAMBAH KATEGORI ================= --}}
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white">Tambah Kategori</div>
+        <div class="card-body">
+            <form action="{{ route('kategori.store') }}" method="POST">
+                @csrf
+                <div class="input-group">
+                    <input type="text" name="nama_kategori" class="form-control" placeholder="Nama Kategori" required>
+                    <button class="btn btn-primary">Tambah</button>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 
-    {{-- ========================= --}}
-    {{-- 2. Tambah Uraian --}}
-    {{-- ========================= --}}
-    <form action="{{ route('master.store', ['type' => 'uraian']) }}" method="POST" class="mb-3">
-        @csrf
-        <div class="input-group mb-2">
-            <select name="kategori_id" class="form-select" required>
-                <option value="">Pilih Kategori</option>
-                @forelse($kategoris as $k)
-                    <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
-                @empty
-                    <option value="">Belum ada kategori</option>
-                @endforelse
-            </select>
-            <input type="text" name="nama_uraian" class="form-control" placeholder="Nama Uraian" required>
-            <button class="btn btn-primary" type="submit">Tambah Uraian</button>
+    {{-- ================= TAMBAH URAIAN ================= --}}
+    <div class="card mb-3">
+        <div class="card-header bg-success text-white">Tambah Uraian</div>
+        <div class="card-body">
+            <form action="{{ route('uraian.store') }}" method="POST">
+                @csrf
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <select name="kategori_id" class="form-select" required>
+                            <option value="">Pilih Kategori</option>
+                            @foreach($kategoris as $k)
+                                <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <input type="text" name="nama_uraian" class="form-control" placeholder="Nama Uraian" required>
+                    </div>
+
+                    <div class="col-md-2">
+                        <button class="btn btn-success w-100">Tambah</button>
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 
-    {{-- ========================= --}}
-    {{-- 3. Tambah Sub-Uraian --}}
-    {{-- ========================= --}}
-    <form action="{{ route('master.store', ['type' => 'suburaian']) }}" method="POST" class="mb-3">
-        @csrf
-        <div class="input-group mb-2">
-            <select name="uraian_id" class="form-select" required>
-                <option value="">Pilih Uraian</option>
-                @foreach($kategoris as $k)
-                    @foreach($k->uraian as $u)
-                        <option value="{{ $u->id }}">{{ $k->nama_kategori }} → {{ $u->nama_uraian }}</option>
-                    @endforeach
-                @endforeach
-            </select>
-            <input type="text" name="nama_sub_uraian" class="form-control" placeholder="Nama Sub-Uraian" required>
-            <button class="btn btn-primary" type="submit">Tambah Sub-Uraian</button>
+    {{-- ================= TAMBAH SUB URAIAN ================= --}}
+    <div class="card mb-3">
+        <div class="card-header bg-warning">Tambah Sub Uraian</div>
+        <div class="card-body">
+            <form action="{{ route('suburaian.store') }}" method="POST">
+                @csrf
+                <div class="row g-2">
+
+                    <div class="col-md-4">
+                        <select name="uraian_id" class="form-select" required>
+                            <option value="">Pilih Uraian</option>
+                            @foreach($kategoris as $k)
+                                @foreach($k->uraian as $u)
+                                    <option value="{{ $u->id }}">
+                                        {{ $k->nama_kategori }} → {{ $u->nama_uraian }}
+                                    </option>
+                                @endforeach
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <input type="text" name="nama_sub_uraian" class="form-control" placeholder="Nama Sub Uraian" required>
+                    </div>
+
+                    <div class="col-md-2">
+                        <button class="btn btn-warning w-100">Tambah</button>
+                    </div>
+
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 
-    <hr>
+    {{-- ================= DATA MASTER ================= --}}
+    <div class="card">
+        <div class="card-header bg-dark text-white">Data Master</div>
+        <div class="card-body">
 
-    <h4>Data Master Saat Ini</h4>
-    @forelse($kategoris as $k)
-        <div class="mb-3">
-            <strong>{{ $k->nama_kategori }}</strong>
-            @if($k->uraian->isNotEmpty())
-                <ul>
-                    @foreach($k->uraian as $u)
-                        <li>{{ $u->nama_uraian }}
+            @forelse($kategoris as $k)
+                <div class="mb-3 border rounded p-3">
+
+                    <h5 class="text-primary">{{ $k->nama_kategori }}</h5>
+
+                    @forelse($k->uraian as $u)
+                        <div class="ms-3">
+
+                            <strong>• {{ $u->nama_uraian }}</strong>
+
                             @if($u->subUraian->isNotEmpty())
-                                <ul>
+                                <ul class="ms-3">
                                     @foreach($u->subUraian as $s)
                                         <li>{{ $s->nama_sub_uraian }}</li>
                                     @endforeach
                                 </ul>
                             @else
-                                <ul><li><em>Belum ada sub-uraian</em></li></ul>
+                                <p class="text-muted ms-3">Belum ada sub-uraian</p>
                             @endif
-                        </li>
-                    @endforeach
-                </ul>
-            @else
-                <p><em>Belum ada uraian</em></p>
-            @endif
+
+                        </div>
+                    @empty
+                        <p class="text-muted ms-3">Belum ada uraian</p>
+                    @endforelse
+
+                </div>
+            @empty
+                <p class="text-muted">Belum ada data</p>
+            @endforelse
+
         </div>
-    @empty
-        <p><em>Belum ada kategori</em></p>
-    @endforelse
+    </div>
 
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
