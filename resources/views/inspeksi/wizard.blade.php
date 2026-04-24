@@ -7,9 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <style>
-        body{
-            background:#f4f8ff;
-        }
+        body{ background:#f4f8ff; }
 
         .sidebar {
             position: fixed;
@@ -29,9 +27,7 @@
             margin-bottom: 6px;
         }
 
-        .sidebar a:hover {
-            background: rgba(255,255,255,0.15);
-        }
+        .sidebar a:hover { background: rgba(255,255,255,0.15); }
 
         .content {
             margin-left: 270px;
@@ -58,19 +54,17 @@
 
 <body>
 
-<!-- SIDEBAR -->
 <div class="sidebar">
     <h5>INSPEKSI K3</h5>
     <hr>
 </div>
 
-<!-- CONTENT -->
 <div class="content">
 
     <h3 class="mb-4">Form Inspeksi K3 RSUD</h3>
 
-    <!-- FORM -->
-    <form id="formInspeksi" method="POST" action="/inspeksi/store">
+    <!-- ✅ FIX ACTION -->
+    <form id="formInspeksi" method="POST" action="{{ route('inspeksi.store') }}">
         @csrf
 
         <!-- STEP 1 -->
@@ -97,14 +91,14 @@
             <canvas id="signature-pad-k3rs" width="300" height="120"></canvas>
             <input type="hidden" name="paraf_petugas_k3rs" id="paraf_k3rs">
 
-            <button type="button" class="btn btn-danger btn-sm mt-2 mb-3" onclick="clearK3rs()">Hapus TTD</button>
+            <button type="button" class="btn btn-danger btn-sm mt-2 mb-3" id="clearK3rs">Hapus TTD</button>
 
             <input type="text" name="nama_petugas_ruangan" class="form-control mb-2" placeholder="Petugas Ruangan">
 
             <canvas id="signature-pad-ruangan" width="300" height="120"></canvas>
             <input type="hidden" name="paraf_petugas_ruangan" id="paraf_ruangan">
 
-            <button type="button" class="btn btn-danger btn-sm mt-2">Hapus TTD</button>
+            <button type="button" class="btn btn-danger btn-sm mt-2 mb-3" id="clearRuangan">Hapus TTD</button>
 
             <div class="mt-3 text-end">
                 <button type="button" class="btn btn-primary" onclick="showStep(2)">Lanjut →</button>
@@ -164,7 +158,8 @@
             </div>
             @endforeach
 
-            <button id="btnSimpan" class="btn btn-success w-100 mt-3">
+            <!-- ✅ FIX BUTTON -->
+            <button type="submit" id="btnSimpan" class="btn btn-success w-100 mt-3">
                 SIMPAN INSPEKSI
             </button>
 
@@ -198,14 +193,23 @@ $('#filterKategori').change(function(){
     $('#kategori-'+$(this).val()).show();
 });
 
-// signature
+// INIT SIGNATURE (lebih aman)
 let padK3rs = new SignaturePad(document.getElementById('signature-pad-k3rs'));
 let padRuangan = new SignaturePad(document.getElementById('signature-pad-ruangan'));
 
-function clearK3rs(){ padK3rs.clear(); }
+// CLEAR BUTTON FIX
+$('#clearK3rs').click(() => padK3rs.clear());
+$('#clearRuangan').click(() => padRuangan.clear());
 
-// submit
-$('#formInspeksi').submit(function(){
+// ✅ SUBMIT FIX TOTAL
+$('#formInspeksi').on('submit', function(e){
+
+    if(padK3rs.isEmpty() || padRuangan.isEmpty()){
+        alert("Tanda tangan wajib diisi!");
+        e.preventDefault();
+        return;
+    }
+
     $('#paraf_k3rs').val(padK3rs.toDataURL());
     $('#paraf_ruangan').val(padRuangan.toDataURL());
 

@@ -14,7 +14,6 @@ use App\Http\Controllers\SubUraianController;
 |--------------------------------------------------------------------------
 */
 
-
 Route::middleware('guest')->group(function () {
 
     Route::get('/login', function () {
@@ -48,7 +47,7 @@ Route::middleware('auth')->group(function () {
 
     /*
     |--------------------------
-    | DASHBOARD (FIX UTAMA)
+    | DASHBOARD
     |--------------------------
     */
     Route::get('/dashboard', [InspeksiController::class, 'dashboard'])
@@ -65,23 +64,28 @@ Route::middleware('auth')->group(function () {
 
     /*
     |--------------------------
-    | INSPEKSI MODULE
+    | INSPEKSI MODULE (UPGRADE)
     |--------------------------
     */
     Route::prefix('inspeksi')->name('inspeksi.')->group(function () {
 
+        // halaman wizard
         Route::get('/wizard', [InspeksiController::class, 'wizard'])
             ->name('wizard');
 
-        Route::post('/', [InspeksiController::class, 'storeInspeksi'])
+        // ✅ FIX: sekarang pakai /inspeksi/store
+        Route::post('/store', [InspeksiController::class, 'storeInspeksi'])
             ->name('store');
 
+        // hasil inspeksi
         Route::get('/hasil/{id}', [InspeksiController::class, 'hasil'])
             ->name('hasil');
 
+        // cetak
         Route::get('/cetak/{id}', [InspeksiController::class, 'cetak'])
             ->name('cetak');
 
+        // export excel
         Route::get('/export-excel', [InspeksiController::class, 'exportExcel'])
             ->name('export');
     });
