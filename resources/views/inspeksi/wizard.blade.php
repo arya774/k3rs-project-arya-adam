@@ -9,15 +9,20 @@
     <style>
         body{
             background:#f4f8ff;
+            overflow-x: hidden;
         }
 
         .sidebar {
             position: fixed;
+            top: 0;
+            left: 0;
             width: 250px;
             height: 100vh;
             background: linear-gradient(180deg,#0d6efd,#0a58ca);
             color: white;
             padding: 20px;
+            overflow-y: auto;
+            z-index: 1000;
         }
 
         .sidebar a {
@@ -34,7 +39,7 @@
         }
 
         .content {
-            margin-left: 270px;
+            margin-left: 250px;
             padding: 25px;
         }
 
@@ -53,33 +58,42 @@
             border-radius: 10px;
             background:white;
         }
+
+        .card h5 {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 10px;
+            z-index: 10;
+        }
+
+        /* preview foto */
+        #preview img{
+            width:120px;
+            border-radius:10px;
+            margin-right:10px;
+            margin-bottom:10px;
+            box-shadow:0 3px 10px rgba(0,0,0,0.2);
+        }
     </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
 <div class="sidebar">
     <h5>INSPEKSI K3</h5>
     <hr>
+
+    <a href="{{ route('dashboard') }}">📊 Dashboard</a>
+    <a href="{{ route('inspeksi.wizard') }}">📝 Form Inspeksi</a>
+    <a href="{{ route('laporan.index') }}">📄 Laporan</a>
 </div>
 
-@foreach($subUraian as $item)
-    <div class="mb-3">
-        <label>{{ $item->nama }}</label><br>
-
-        <input type="radio" name="sub_uraian[{{ $item->id }}]" value="ya"> Ya
-        <input type="radio" name="sub_uraian[{{ $item->id }}]" value="tidak"> Tidak
-    </div>
-@endforeach
-
-<!-- CONTENT -->
 <div class="content">
 
     <h3 class="mb-4">Form Inspeksi K3 RSUD</h3>
 
-    <!-- FORM -->
-   <form id="formInspeksi" method="POST" action="{{ route('inspeksi.store') }}">>
+    <form id="formInspeksi" method="POST" action="{{ route('inspeksi.store') }}" enctype="multipart/form-data">
         @csrf
 
         <!-- STEP 1 -->
@@ -106,14 +120,14 @@
             <canvas id="signature-pad-k3rs" width="300" height="120"></canvas>
             <input type="hidden" name="paraf_petugas_k3rs" id="paraf_k3rs">
 
-            <button type="button" class="btn btn-danger btn-sm mt-2 mb-3" onclick="clearK3rs()">Hapus TTD</button>
+            <button type="button" class="btn btn-danger btn-sm mt-2 mb-3" id="clearK3rs">Hapus TTD</button>
 
             <input type="text" name="nama_petugas_ruangan" class="form-control mb-2" placeholder="Petugas Ruangan">
 
             <canvas id="signature-pad-ruangan" width="300" height="120"></canvas>
             <input type="hidden" name="paraf_petugas_ruangan" id="paraf_ruangan">
 
-            <button type="button" class="btn btn-danger btn-sm mt-2">Hapus TTD</button>
+            <button type="button" class="btn btn-danger btn-sm mt-2 mb-3" id="clearRuangan">Hapus TTD</button>
 
             <div class="mt-3 text-end">
                 <button type="button" class="btn btn-primary" onclick="showStep(2)">Lanjut →</button>
@@ -174,7 +188,7 @@
                                 <label><input type="radio" name="nilai[{{ $s->id }}]" value="tidak"> Tidak</label>
                             </div>
 
-                            <textarea name="catatan[{{ $s->id }}]" class="form-control mt-2" placeholder="Catatan"></textarea>
+                            <textarea name="catatan_multi[{{ $s->id }}]" class="form-control mt-2" placeholder="Catatan"></textarea>
 
                         </div>
 
@@ -188,7 +202,18 @@
             </div>
             @endforeach
 
-            <button id="btnSimpan" class="btn btn-success w-100 mt-3">
+            <!-- 🔥 UPLOAD FOTO -->
+            <div class="card p-3 mt-3">
+                <label class="mb-2"><b>Upload Foto Bukti</b></label>
+
+                <input type="file" name="foto[]" id="foto" class="form-control" multiple accept="image/*">
+
+                <small class="text-muted">Bisa pilih lebih dari 1 foto</small>
+
+                <div id="preview" class="mt-3 d-flex flex-wrap"></div>
+            </div>
+
+            <button type="submit" id="btnSimpan" class="btn btn-success w-100 mt-3">
                 SIMPAN INSPEKSI
             </button>
 
@@ -213,28 +238,52 @@ function showStep(step){
     $('#step'+step).addClass('active');
 }
 
-// tanggal otomatis
 $('#tanggal').val(new Date().toISOString().split('T')[0]);
 
-// filter kategori
 $('#filterKategori').change(function(){
     $('.kategori-box').hide();
     $('#kategori-'+$(this).val()).show();
 });
 
-// signature
 let padK3rs = new SignaturePad(document.getElementById('signature-pad-k3rs'));
 let padRuangan = new SignaturePad(document.getElementById('signature-pad-ruangan'));
 
-function clearK3rs(){ padK3rs.clear(); }
+$('#clearK3rs').click(() => padK3rs.clear());
+$('#clearRuangan').click(() => padRuangan.clear());
 
-// submit
-$('#formInspeksi').submit(function(){
+$('#formInspeksi').on('submit', function(e){
+
+    if(padK3rs.isEmpty() || padRuangan.isEmpty()){
+        alert("Tanda tangan wajib diisi!");
+        e.preventDefault();
+        return;
+    }
+
     $('#paraf_k3rs').val(padK3rs.toDataURL());
     $('#paraf_ruangan').val(padRuangan.toDataURL());
 
     $('#btnSimpan').prop('disabled',true).text('Menyimpan...');
     $('#loading').removeClass('d-none');
+});
+
+// 🔥 PREVIEW FOTO
+document.getElementById('foto').addEventListener('change', function(event) {
+
+    let preview = document.getElementById('preview');
+    preview.innerHTML = "";
+
+    Array.from(event.target.files).forEach(file => {
+
+        let reader = new FileReader();
+
+        reader.onload = function(e) {
+            let img = document.createElement("img");
+            img.src = e.target.result;
+            preview.appendChild(img);
+        }
+
+        reader.readAsDataURL(file);
+    });
 });
 
 </script>

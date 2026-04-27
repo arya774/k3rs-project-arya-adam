@@ -34,7 +34,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/', fn () => redirect()->route('dashboard'));
 
-    Route::get('/dashboard', [InspeksiController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [InspeksiController::class, 'dashboard'])
+        ->name('dashboard');
 
     /*
     |--------------------------------------------------------------------------
@@ -47,24 +48,45 @@ Route::middleware('auth')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | INSPEKSI (CLEAN FINAL)
+    | INSPEKSI
     |--------------------------------------------------------------------------
     */
     Route::prefix('inspeksi')->name('inspeksi.')->group(function () {
 
-        Route::get('/wizard', [InspeksiController::class, 'wizard'])->name('wizard');
+        Route::get('/wizard', [InspeksiController::class, 'wizard'])
+            ->name('wizard');
 
-        Route::post('/store', [InspeksiController::class, 'storeInspeksi'])->name('store');
+        Route::post('/store', [InspeksiController::class, 'storeInspeksi'])
+            ->name('store');
 
-        Route::get('/hasil/{id}', [InspeksiController::class, 'hasil'])->name('hasil');
+        Route::get('/hasil/{id}', [InspeksiController::class, 'hasil'])
+            ->name('hasil');
 
-        Route::get('/cetak/{id}', [InspeksiController::class, 'cetak'])->name('cetak');
+        Route::get('/cetak/{id}', [InspeksiController::class, 'cetak'])
+            ->name('cetak');
 
-        Route::get('/export-excel', [InspeksiController::class, 'exportExcel'])->name('export');
+        Route::get('/export-excel', [InspeksiController::class, 'exportExcel'])
+            ->name('export');
+
+        // ✅ TAMBAHAN PENTING (FIX HAPUS)
+        Route::delete('/{id}', [InspeksiController::class, 'destroy'])
+            ->name('destroy');
     });
 
+    /*
+    |--------------------------------------------------------------------------
+    | LAPORAN
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('laporan')->name('laporan.')->group(function () {
 
+        // halaman laporan
+        Route::get('/', [LaporanController::class, 'index'])
+            ->name('index');
 
-    Route::get('/laporan', [LaporanController::class, 'index'])
-        ->name('laporan.index');
+        // cetak per ruangan
+        Route::get('/cetak-ruangan', [LaporanController::class, 'cetakPerRuangan'])
+            ->name('cetak.ruangan');
+    });
+
 });

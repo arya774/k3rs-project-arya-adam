@@ -9,13 +9,10 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
-{
-    Schema::table('inspeksi', function (Blueprint $table) {
-        $table->longText('paraf_petugas_k3rs')->change();
-        $table->longText('paraf_petugas_ruangan')->change();
-    });
-}
+    public function up(): void
+    {
+        //
+    }
 
     /**
      * Reverse the migrations.
