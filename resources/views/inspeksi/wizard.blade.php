@@ -64,6 +64,15 @@
     <hr>
 </div>
 
+@foreach($subUraian as $item)
+    <div class="mb-3">
+        <label>{{ $item->nama }}</label><br>
+
+        <input type="radio" name="sub_uraian[{{ $item->id }}]" value="ya"> Ya
+        <input type="radio" name="sub_uraian[{{ $item->id }}]" value="tidak"> Tidak
+    </div>
+@endforeach
+
 <!-- CONTENT -->
 <div class="content">
 
@@ -111,6 +120,21 @@
             </div>
 
         </div>
+
+        <form action="{{ route('inspeksi.store') }}" method="POST">
+    @csrf
+
+    @foreach($subUraian as $item)
+        <div class="mb-3">
+            <label>{{ $item->nama }}</label><br>
+
+            <input type="radio" name="sub_uraian[{{ $item->id }}]" value="ya"> Ya
+            <input type="radio" name="sub_uraian[{{ $item->id }}]" value="tidak"> Tidak
+        </div>
+    @endforeach
+
+    <button type="submit" class="btn btn-success">Simpan</button>
+</form>
 
         <!-- STEP 2 -->
         <div class="step card card-glass p-3" id="step2">

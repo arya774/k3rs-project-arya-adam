@@ -57,11 +57,13 @@ public function dashboard()
     // ============================
     // WIZARD
     // ============================
-    public function wizard()
-{
-    $kategoris = Kategori::with('uraian.subUraian')->get();
 
-    return view('inspeksi.wizard', compact('kategoris'));
+public function wizard()
+{
+    $kategori = Kategori::with('uraian.subUraian')->get();
+    $subUraian = SubUraian::all(); // 🔥 INI YANG KURANG
+
+    return view('inspeksi.wizard', compact('kategori', 'subUraian'));
 }
 
 
