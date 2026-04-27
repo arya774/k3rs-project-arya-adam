@@ -1,72 +1,18 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Uraian</title>
+@extends('layouts.app')
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+@section('title', 'Uraian')
 
-    <style>
-        body {
-            background: linear-gradient(120deg, #f8fbff, #eef5ff);
-        }
+@section('content')
 
-        .card-glass {
-            background: white;
-            border: none;
-            border-radius: 18px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-        }
+<div class="container-fluid">
 
-        .top-bar {
-            background: linear-gradient(90deg, #0d6efd, #1e88e5);
-            color: white;
-            padding: 18px;
-            border-radius: 0 0 20px 20px;
-        }
+    <h4 class="mb-4">📋 MASTER URAIAN</h4>
 
-        .btn-primary {
-            background: linear-gradient(90deg, #0d6efd, #1e88e5);
-            border: none;
-            border-radius: 10px;
-        }
-
-        .form-control, .form-select {
-            border-radius: 10px;
-        }
-
-        table thead {
-            background: #0d6efd;
-            color: white;
-        }
-
-        table tbody tr:hover {
-            background: #f1f7ff;
-        }
-    </style>
-</head>
-
-<body>
-
-<!-- HEADER -->
-<div class="top-bar mb-4">
-    <div class="container">
-        <h4 class="mb-0">📋 MASTER URAIAN</h4>
-    </div>
-</div>
-
-<div class="container mb-3">
-    <a href="/inspeksi/wizard" class="btn btn-secondary">
-        ← Kembali
-    </a>
-</div>
-
-<div class="container">
     <div class="row">
 
         <!-- FORM -->
         <div class="col-md-4">
-            <div class="card card-glass p-4">
+            <div class="card shadow p-4">
 
                 <h5 class="text-primary mb-3">Tambah Uraian</h5>
 
@@ -89,14 +35,14 @@
             </div>
         </div>
 
-        <!-- LIST -->
+        <!-- TABLE -->
         <div class="col-md-8">
-            <div class="card card-glass p-4">
+            <div class="card shadow p-4">
 
                 <h5 class="text-primary mb-3">Daftar Uraian</h5>
 
                 <table class="table align-middle">
-                    <thead>
+                    <thead class="table-primary">
                         <tr>
                             <th>Kategori</th>
                             <th>Uraian</th>
@@ -112,6 +58,7 @@
         </div>
 
     </div>
+
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -123,22 +70,19 @@ $.ajaxSetup({
     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
 });
 
-// ======================
-// TAMBAH URAIAN (FIXED)
-// ======================
+// TAMBAH URAIAN
 $('#btnUraian').click(function(){
 
     let kategori = $('#kategori').val();
     let nama = $('#nama_uraian').val();
 
-    // VALIDASI
-    if(kategori === ''){
-        alert('❗ Pilih kategori dulu');
+    if(!kategori){
+        alert('Pilih kategori dulu!');
         return;
     }
 
-    if(nama === ''){
-        alert('❗ Nama uraian tidak boleh kosong');
+    if(!nama){
+        alert('Nama tidak boleh kosong!');
         return;
     }
 
@@ -149,19 +93,11 @@ $('#btnUraian').click(function(){
     .done(function(){
         $('#nama_uraian').val('');
         loadUraian();
-        alert('✅ Berhasil ditambahkan');
-    })
-    .fail(function(xhr){
-        console.log(xhr.responseText);
-        alert('❌ Gagal tambah data (cek controller)');
     });
 
 });
 
-
-// ======================
-// LOAD URAIAN (FIXED)
-// ======================
+// LOAD DATA
 function loadUraian(){
 
     $.get('/inspeksi/get-uraian-all', function(data){
@@ -170,11 +106,11 @@ function loadUraian(){
 
         data.forEach(u => {
             html += `
-                <tr id="row-${u.id}">
+                <tr>
                     <td>${u.kategori.nama_kategori}</td>
-                    <td class="fw-semibold">${u.nama_uraian}</td>
+                    <td>${u.nama_uraian}</td>
                     <td class="text-center">
-                        <button class="btn btn-sm btn-outline-danger btn-delete" data-id="${u.id}">
+                        <button class="btn btn-sm btn-danger btn-delete" data-id="${u.id}">
                             Hapus
                         </button>
                     </td>
@@ -187,39 +123,26 @@ function loadUraian(){
 
 }
 
-
-// ======================
-// DELETE URAIAN (FIXED)
-// ======================
+// DELETE
 $(document).on('click','.btn-delete',function(){
 
     let id = $(this).data('id');
 
-    if(!confirm('Hapus uraian ini?')) return;
+    if(!confirm('Hapus data?')) return;
 
     $.ajax({
         url: '/inspeksi/uraian-delete/' + id,
         type: 'DELETE',
-        success: function(res){
-            if(res.success){
-                loadUraian();
-            } else {
-                alert('Gagal hapus dari server');
-            }
-        },
-        error: function(xhr){
-            console.log(xhr.responseText); // 🔥 buat lihat error asli
-            alert('ERROR SERVER');
+        success: function(){
+            loadUraian();
         }
     });
 
 });
 
-
-// LOAD AWAL
+// INIT
 loadUraian();
 
 </script>
 
-</body>
-</html>
+@endsection

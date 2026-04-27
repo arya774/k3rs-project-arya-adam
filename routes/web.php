@@ -4,8 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InspeksiController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\UraianController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\UraianController;
 use App\Http\Controllers\SubUraianController;
 
 /*
@@ -13,12 +13,9 @@ use App\Http\Controllers\SubUraianController;
 | AUTH
 |--------------------------------------------------------------------------
 */
-
 Route::middleware('guest')->group(function () {
 
-    Route::get('/login', function () {
-        return view('auth.login');
-    })->name('login');
+    Route::get('/login', fn () => view('auth.login'))->name('login');
 
     Route::post('/login', [LoginController::class, 'login'])
         ->name('login.process');
@@ -30,80 +27,66 @@ Route::post('/logout', [LoginController::class, 'logout'])
 
 /*
 |--------------------------------------------------------------------------
-| AUTHENTICATED AREA
+| AUTH AREA
 |--------------------------------------------------------------------------
 */
-
 Route::middleware('auth')->group(function () {
 
-    /*
-    |--------------------------
-    | ROOT
-    |--------------------------
-    */
-    Route::get('/', function () {
-        return redirect()->route('dashboard');
-    });
+    Route::get('/', fn () => redirect()->route('dashboard'));
 
-    /*
-    |--------------------------
-    | DASHBOARD
-    |--------------------------
-    */
     Route::get('/dashboard', [InspeksiController::class, 'dashboard'])
         ->name('dashboard');
 
     /*
-    |--------------------------
-    | MASTER DATA (RESOURCE)
-    |--------------------------
+    |--------------------------------------------------------------------------
+    | MASTER DATA
+    |--------------------------------------------------------------------------
     */
     Route::resource('kategori', KategoriController::class);
     Route::resource('uraian', UraianController::class);
     Route::resource('suburaian', SubUraianController::class);
 
     /*
-    |--------------------------
-    | INSPEKSI MODULE (UPGRADE)
-    |--------------------------
+    |--------------------------------------------------------------------------
+    | INSPEKSI
+    |--------------------------------------------------------------------------
     */
     Route::prefix('inspeksi')->name('inspeksi.')->group(function () {
 
-        // halaman wizard
         Route::get('/wizard', [InspeksiController::class, 'wizard'])
             ->name('wizard');
 
-        // ✅ FIX: sekarang pakai /inspeksi/store
         Route::post('/store', [InspeksiController::class, 'storeInspeksi'])
             ->name('store');
 
-        // hasil inspeksi
         Route::get('/hasil/{id}', [InspeksiController::class, 'hasil'])
             ->name('hasil');
 
-        // cetak
         Route::get('/cetak/{id}', [InspeksiController::class, 'cetak'])
             ->name('cetak');
 
-        // export excel
         Route::get('/export-excel', [InspeksiController::class, 'exportExcel'])
             ->name('export');
+
+        // ✅ TAMBAHAN PENTING (FIX HAPUS)
+        Route::delete('/{id}', [InspeksiController::class, 'destroy'])
+            ->name('destroy');
     });
 
     /*
-    |--------------------------
+    |--------------------------------------------------------------------------
     | LAPORAN
-    |--------------------------
+    |--------------------------------------------------------------------------
     */
-    Route::get('/laporan', [LaporanController::class, 'index'])
-        ->name('laporan.index');
-});
+    Route::prefix('laporan')->name('laporan.')->group(function () {
 
-/*
-|--------------------------------------------------------------------------
-| FALLBACK
-|--------------------------------------------------------------------------
-*/
-Route::fallback(function () {
-    abort(404);
+        // halaman laporan
+        Route::get('/', [LaporanController::class, 'index'])
+            ->name('index');
+
+        // cetak per ruangan
+        Route::get('/cetak-ruangan', [LaporanController::class, 'cetakPerRuangan'])
+            ->name('cetak.ruangan');
+    });
+
 });
