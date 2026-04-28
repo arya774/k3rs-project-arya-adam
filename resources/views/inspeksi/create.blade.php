@@ -71,7 +71,7 @@
             <option value="">Pilih Uraian</option>
             @foreach($kategoris as $k)
                 @foreach($k->uraian as $u)
-                    <option value="{{ $u->id }}">
+                
                         {{ $k->nama_kategori }} → {{ $u->nama_uraian }}
                     </option>
                 @endforeach
