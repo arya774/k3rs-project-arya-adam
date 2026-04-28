@@ -9,38 +9,30 @@ use App\Models\Uraian;
 class SubUraianController extends Controller
 {
     public function index()
-{
-    $suburaians = SubUraian::with('uraian.kategori')->get();
-    $uraians = Uraian::all();
+    {
+        $suburaians = SubUraian::with('uraian.kategori')->latest()->get();
+        $uraians = Uraian::with('kategori')->get();
 
-    return view('suburaianindex', compact('suburaians', 'uraians'));
-}
-    // ✅ TAMPIL DATA
-
-    // ✅ SIMPAN DATA
-
-       public function store(Request $request)
-{
-    $request->validate([
-        'uraian_id' => 'required|exists:uraian,id',
-        'nama_sub_uraian' => 'required|array'
-    ]);
-
-    foreach ($request->nama_sub_uraian as $sub) {
-
-        $sub = trim($sub);
-
-        if ($sub !== '') {
-            SubUraian::create([
-                'uraian_id' => $request->uraian_id,
-                'nama_sub_uraian' => $sub
-            ]);
-        }
+        return view('suburaianindex', compact('suburaians', 'uraians'));
     }
 
-    return redirect()->back()->with('success', 'Sub uraian berhasil ditambahkan');
-}
-    // ✅ FORM EDIT
+    // ✅ SIMPAN (FIX: TIDAK PAKAI ARRAY LAGI)
+    public function store(Request $request)
+    {
+        $request->validate([
+            'uraian_id' => 'required|exists:uraian,id',
+            'nama_sub_uraian' => 'required|string|max:255'
+        ]);
+
+        SubUraian::create([
+            'uraian_id' => $request->uraian_id,
+            'nama_sub_uraian' => trim($request->nama_sub_uraian)
+        ]);
+
+        return redirect()->back()->with('success', 'Sub uraian berhasil ditambahkan');
+    }
+
+    // ✅ EDIT
     public function edit($id)
     {
         $suburaian = SubUraian::findOrFail($id);
@@ -60,10 +52,10 @@ class SubUraianController extends Controller
         $suburaian = SubUraian::findOrFail($id);
         $suburaian->update([
             'uraian_id' => $request->uraian_id,
-            'nama_sub_uraian' => $request->nama_sub_uraian
+            'nama_sub_uraian' => trim($request->nama_sub_uraian)
         ]);
 
-        return redirect()->back()->with('success', 'Sub-uraian berhasil diupdate!');
+        return redirect()->route('suburaian.index')->with('success', 'Sub-uraian berhasil diupdate!');
     }
 
     // ✅ HAPUS

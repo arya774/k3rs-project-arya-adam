@@ -57,19 +57,11 @@
             border:1px solid #ddd;
             border-radius: 10px;
             background:white;
+            max-width: 100%;
         }
 
-        .card h5 {
-            position: sticky;
-            top: 0;
-            background: white;
-            padding: 10px;
-            z-index: 10;
-        }
-
-        /* preview foto */
         #preview img{
-            width:120px;
+            width:110px;
             border-radius:10px;
             margin-right:10px;
             margin-bottom:10px;
@@ -102,12 +94,12 @@
             <div class="row">
                 <div class="col-md-6 mb-2">
                     <label>Tanggal</label>
-                    <input type="date" id="tanggal" name="tanggal" class="form-control">
+                    <input type="date" name="tanggal" id="tanggal" class="form-control" required>
                 </div>
 
                 <div class="col-md-6 mb-2">
                     <label>Ruangan</label>
-                    <input type="text" name="ruangan" class="form-control">
+                    <input type="text" name="ruangan" class="form-control" required>
                 </div>
             </div>
 
@@ -115,14 +107,14 @@
 
             <h5>Petugas</h5>
 
-            <input type="text" name="nama_petugas_k3rs" class="form-control mb-2" placeholder="Petugas K3RS">
+            <input type="text" name="nama_petugas_k3rs" class="form-control mb-2" placeholder="Petugas K3RS" required>
 
             <canvas id="signature-pad-k3rs" width="300" height="120"></canvas>
             <input type="hidden" name="paraf_petugas_k3rs" id="paraf_k3rs">
 
             <button type="button" class="btn btn-danger btn-sm mt-2 mb-3" id="clearK3rs">Hapus TTD</button>
 
-            <input type="text" name="nama_petugas_ruangan" class="form-control mb-2" placeholder="Petugas Ruangan">
+            <input type="text" name="nama_petugas_ruangan" class="form-control mb-2" placeholder="Petugas Ruangan" required>
 
             <canvas id="signature-pad-ruangan" width="300" height="120"></canvas>
             <input type="hidden" name="paraf_petugas_ruangan" id="paraf_ruangan">
@@ -140,14 +132,12 @@
 
             <h5 class="mb-3">Checklist Inspeksi</h5>
 
-            <div class="mb-3">
-                <select id="filterKategori" class="form-control">
-                    <option value="">Pilih Kategori</option>
-                    @foreach($kategoris as $k)
-                        <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
-                    @endforeach
-                </select>
-            </div>
+            <select id="filterKategori" class="form-control mb-3">
+                <option value="">Pilih Kategori</option>
+                @foreach($kategoris as $k)
+                    <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
+                @endforeach
+            </select>
 
             @foreach($kategoris as $k)
             <div class="kategori-box" id="kategori-{{ $k->id }}" style="display:none;">
@@ -173,7 +163,7 @@
                                 <label><input type="radio" name="nilai[{{ $s->id }}]" value="tidak"> Tidak</label>
                             </div>
 
-                            <textarea name="catatan_multi[{{ $s->id }}]" class="form-control mt-2" placeholder="Catatan"></textarea>
+                            <textarea name="catatan_multi[{{ $s->id }}]" class="form-control mt-2" placeholder="Catatan (opsional)"></textarea>
 
                         </div>
 
@@ -187,13 +177,13 @@
             </div>
             @endforeach
 
-            <!-- 🔥 UPLOAD FOTO -->
+            <!-- FOTO OPTIONAL -->
             <div class="card p-3 mt-3">
-                <label class="mb-2"><b>Upload Foto Bukti</b></label>
+                <label><b>Upload Foto (Opsional)</b></label>
 
                 <input type="file" name="foto[]" id="foto" class="form-control" multiple accept="image/*">
 
-                <small class="text-muted">Bisa pilih lebih dari 1 foto</small>
+                <small class="text-muted">Tidak wajib diisi</small>
 
                 <div id="preview" class="mt-3 d-flex flex-wrap"></div>
             </div>
@@ -225,16 +215,18 @@ function showStep(step){
 
 $('#tanggal').val(new Date().toISOString().split('T')[0]);
 
-$('#filterKategori').change(function(){
+$('#filterKategori').on('change', function(){
     $('.kategori-box').hide();
-    $('#kategori-'+$(this).val()).show();
+    if($(this).val()){
+        $('#kategori-'+$(this).val()).show();
+    }
 });
 
 let padK3rs = new SignaturePad(document.getElementById('signature-pad-k3rs'));
 let padRuangan = new SignaturePad(document.getElementById('signature-pad-ruangan'));
 
-$('#clearK3rs').click(() => padK3rs.clear());
-$('#clearRuangan').click(() => padRuangan.clear());
+$('#clearK3rs').click(()=>padK3rs.clear());
+$('#clearRuangan').click(()=>padRuangan.clear());
 
 $('#formInspeksi').on('submit', function(e){
 
@@ -251,20 +243,18 @@ $('#formInspeksi').on('submit', function(e){
     $('#loading').removeClass('d-none');
 });
 
-// 🔥 PREVIEW FOTO
-document.getElementById('foto').addEventListener('change', function(event) {
+// preview foto
+$('#foto').on('change', function(){
 
-    let preview = document.getElementById('preview');
-    preview.innerHTML = "";
+    let preview = $('#preview');
+    preview.html('');
 
-    Array.from(event.target.files).forEach(file => {
+    Array.from(this.files).forEach(file => {
 
         let reader = new FileReader();
 
-        reader.onload = function(e) {
-            let img = document.createElement("img");
-            img.src = e.target.result;
-            preview.appendChild(img);
+        reader.onload = function(e){
+            preview.append(`<img src="${e.target.result}">`);
         }
 
         reader.readAsDataURL(file);

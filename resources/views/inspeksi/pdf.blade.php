@@ -61,6 +61,17 @@
             width: 200px;
             margin: 5px auto;
         }
+
+        .foto-box {
+            margin-top: 15px;
+        }
+
+        .foto-box img {
+            width: 120px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            padding: 3px;
+        }
     </style>
 </head>
 <body>
@@ -108,6 +119,23 @@
     </tbody>
 </table>
 
+<!-- FOTO -->
+@if(isset($inspeksi->foto) && count($inspeksi->foto))
+<div class="foto-box">
+    <h4>Dokumentasi Foto</h4>
+
+    @foreach($inspeksi->foto as $f)
+        @php
+            $path = public_path('storage/' . $f->path);
+        @endphp
+
+        @if(file_exists($path))
+            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($path)) }}">
+        @endif
+    @endforeach
+</div>
+@endif
+
 <!-- REKAP -->
 <div class="rekap">
     <h4>Rekap Nilai</h4>
@@ -123,7 +151,7 @@
     </h3>
 </div>
 
-<!-- TANDA TANGAN -->
+<!-- TTD -->
 <table class="ttd">
     <tr>
 
@@ -131,19 +159,21 @@
         <td>
             <strong>Petugas K3RS</strong><br><br>
 
-            @php
-                $path_k3rs = public_path('storage/paraf/' . $inspeksi->paraf_petugas_k3rs);
-            @endphp
+            @if(!empty($inspeksi->paraf_petugas_k3rs))
+                @if(str_contains($inspeksi->paraf_petugas_k3rs, 'base64'))
+                    <img src="{{ $inspeksi->paraf_petugas_k3rs }}" style="height:80px;">
+                @else
+                    @php
+                        $path_k3rs = public_path('storage/paraf/' . $inspeksi->paraf_petugas_k3rs);
+                    @endphp
 
-            @if(!empty($inspeksi->paraf_petugas_k3rs) && file_exists($path_k3rs))
-                <img src="data:image/png;base64,{{ base64_encode(file_get_contents($path_k3rs)) }}" 
-                     style="height:80px;"><br>
-            @else
-                <br><br>
+                    @if(file_exists($path_k3rs))
+                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents($path_k3rs)) }}" style="height:80px;">
+                    @endif
+                @endif
             @endif
 
             <div class="line"></div>
-
             <strong>{{ $inspeksi->nama_petugas_k3rs ?? '-' }}</strong>
         </td>
 
@@ -151,19 +181,21 @@
         <td>
             <strong>Petugas Ruangan</strong><br><br>
 
-            @php
-                $path_ruangan = public_path('storage/paraf/' . $inspeksi->paraf_petugas_ruangan);
-            @endphp
+            @if(!empty($inspeksi->paraf_petugas_ruangan))
+                @if(str_contains($inspeksi->paraf_petugas_ruangan, 'base64'))
+                    <img src="{{ $inspeksi->paraf_petugas_ruangan }}" style="height:80px;">
+                @else
+                    @php
+                        $path_ruangan = public_path('storage/paraf/' . $inspeksi->paraf_petugas_ruangan);
+                    @endphp
 
-            @if(!empty($inspeksi->paraf_petugas_ruangan) && file_exists($path_ruangan))
-                <img src="data:image/png;base64,{{ base64_encode(file_get_contents($path_ruangan)) }}" 
-                     style="height:80px;"><br>
-            @else
-                <br><br>
+                    @if(file_exists($path_ruangan))
+                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents($path_ruangan)) }}" style="height:80px;">
+                    @endif
+                @endif
             @endif
 
             <div class="line"></div>
-
             <strong>{{ $inspeksi->nama_petugas_ruangan ?? '-' }}</strong>
         </td>
 

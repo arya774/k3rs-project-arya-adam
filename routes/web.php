@@ -7,6 +7,8 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\UraianController;
 use App\Http\Controllers\SubUraianController;
+use App\Models\SubUraian;
+use App\Models\Uraian;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,6 +50,19 @@ Route::middleware('auth')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
+    | 🔥 API UNTUK AJAX (WAJIB ADA)
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/inspeksi/get-uraian-all', function () {
+        return Uraian::all();
+    });
+
+    Route::get('/inspeksi/get-sub-all', function () {
+        return SubUraian::with('uraian')->latest()->get();
+    });
+
+    /*
+    |--------------------------------------------------------------------------
     | INSPEKSI
     |--------------------------------------------------------------------------
     */
@@ -56,7 +71,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/wizard', [InspeksiController::class, 'wizard'])
             ->name('wizard');
 
-        Route::post('/store', [InspeksiController::class, 'storeInspeksi'])
+        Route::post('/store', [InspeksiController::class, 'store'])
             ->name('store');
 
         Route::get('/hasil/{id}', [InspeksiController::class, 'hasil'])
@@ -68,7 +83,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/export-excel', [InspeksiController::class, 'exportExcel'])
             ->name('export');
 
-        // ✅ TAMBAHAN PENTING (FIX HAPUS)
         Route::delete('/{id}', [InspeksiController::class, 'destroy'])
             ->name('destroy');
     });
@@ -80,11 +94,9 @@ Route::middleware('auth')->group(function () {
     */
     Route::prefix('laporan')->name('laporan.')->group(function () {
 
-        // halaman laporan
         Route::get('/', [LaporanController::class, 'index'])
             ->name('index');
 
-        // cetak per ruangan
         Route::get('/cetak-ruangan', [LaporanController::class, 'cetakPerRuangan'])
             ->name('cetak.ruangan');
     });

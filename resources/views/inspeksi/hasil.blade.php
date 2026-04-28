@@ -95,6 +95,7 @@
                         <th>Sub-Uraian</th>
                         <th>Nilai</th>
                         <th>Catatan</th>
+                        <th>Foto</th> <!-- 🔥 TAMBAHAN -->
                     </tr>
                 </thead>
 
@@ -105,6 +106,7 @@
                         <td>{{ $d->subUraian->uraian->kategori->nama_kategori ?? '-' }}</td>
                         <td>{{ $d->subUraian->uraian->nama_uraian ?? '-' }}</td>
                         <td>{{ $d->subUraian->nama_sub_uraian ?? '-' }}</td>
+
                         <td class="text-center">
                             @if(strtolower($d->nilai) === 'ya')
                                 <span class="ya">YA</span>
@@ -112,11 +114,28 @@
                                 <span class="tidak">TIDAK</span>
                             @endif
                         </td>
+
                         <td>{{ $d->catatan ?? '-' }}</td>
+
+                        <!-- 🔥 FOTO -->
+                        <td>
+                            @if($inspeksi->fotos->count())
+                                @foreach($inspeksi->fotos as $foto)
+                                    <a href="{{ $foto->url }}" target="_blank">
+                                        <img src="{{ $foto->url }}"
+                                             width="70"
+                                             class="img-thumbnail mb-1">
+                                    </a>
+                                @endforeach
+                            @else
+                                -
+                            @endif
+                        </td>
+
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center">Belum ada data inspeksi</td>
+                        <td colspan="7" class="text-center">Belum ada data inspeksi</td>
                     </tr>
                 @endforelse
                 </tbody>
@@ -152,10 +171,9 @@
         </div>
     </div>
 
-    <!-- ================= TANDA TANGAN FIX TOTAL ================= -->
+    <!-- TTD -->
     <div class="ttd-box row text-center mt-5">
 
-        <!-- K3RS -->
         <div class="col-md-6">
             <p class="ttd-label">Petugas K3RS</p>
 
@@ -176,7 +194,6 @@
             <div class="ttd-name">{{ $inspeksi->nama_petugas_k3rs ?? '-' }}</div>
         </div>
 
-        <!-- RUANGAN -->
         <div class="col-md-6">
             <p class="ttd-label">Petugas Ruangan</p>
 

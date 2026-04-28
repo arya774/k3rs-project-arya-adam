@@ -4,6 +4,8 @@
 
 @section('content')
 
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 <div class="container-fluid">
 
     <h4 class="mb-4">🧩 MASTER SUB URAIAN</h4>
@@ -24,7 +26,6 @@
                        class="form-control mb-2"
                        placeholder="Ketik lalu tekan ENTER">
 
-                <!-- PREVIEW -->
                 <div id="previewList" class="mb-3"></div>
 
                 <button id="btnSub" class="btn btn-primary w-100">
@@ -53,21 +54,18 @@
 
 <script>
 
-// CSRF
 $.ajaxSetup({
     headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')}
 });
 
 let subList = [];
 
-// ENTER = TAMBAH LIST
+// ENTER TAMBAH
 $('#nama_sub').keypress(function(e){
-
     if(e.which == 13){
         e.preventDefault();
 
         let val = $(this).val().trim();
-
         if(val === '') return;
 
         subList.push(val);
@@ -75,12 +73,10 @@ $('#nama_sub').keypress(function(e){
 
         $(this).val('');
     }
-
 });
 
 // PREVIEW
 function renderPreview(){
-
     let html = '';
 
     subList.forEach((item,index)=>{
@@ -94,7 +90,7 @@ function renderPreview(){
     $('#previewList').html(html);
 }
 
-// HAPUS DARI LIST
+// HAPUS LIST
 function removeItem(index){
     subList.splice(index,1);
     renderPreview();
@@ -102,7 +98,6 @@ function removeItem(index){
 
 // LOAD URAIAN
 function loadUraian(){
-
     $.get('/inspeksi/get-uraian-all', function(data){
 
         let opt = '<option value="">Pilih Uraian</option>';
@@ -113,12 +108,10 @@ function loadUraian(){
 
         $('#uraian').html(opt);
     });
-
 }
 
 // LOAD SUB
 function loadSub(){
-
     $.get('/inspeksi/get-sub-all', function(data){
 
         let html = '';
@@ -135,10 +128,9 @@ function loadSub(){
 
         $('#listSub').html(html);
     });
-
 }
 
-// SIMPAN MULTI
+// SIMPAN (FIX TOTAL)
 $('#btnSub').click(function(){
 
     let uraian = $('#uraian').val();
@@ -153,10 +145,12 @@ $('#btnSub').click(function(){
         return;
     }
 
-    $.post('/inspeksi/master/suburaian',{
+    $.post('/suburaian',{
         uraian_id: uraian,
         nama_sub_uraian: subList
     },function(){
+
+        alert('✅ Berhasil disimpan');
 
         subList = [];
         renderPreview();
@@ -164,7 +158,7 @@ $('#btnSub').click(function(){
 
     }).fail(function(xhr){
         console.log(xhr.responseText);
-        alert('Gagal simpan');
+        alert('❌ Gagal simpan');
     });
 
 });
