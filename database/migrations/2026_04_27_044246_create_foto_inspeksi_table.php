@@ -15,6 +15,11 @@ return new class extends Migration
                 ->constrained('inspeksi')
                 ->onDelete('cascade');
 
+            $table->foreignId('sub_uraian_id')
+                ->nullable()
+                ->constrained('sub_uraian')
+                ->onDelete('cascade');
+
             $table->string('path');
 
             $table->timestamps();

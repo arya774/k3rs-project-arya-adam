@@ -5,7 +5,7 @@
     <style>
         body { 
             font-family: Arial, sans-serif; 
-            font-size: 14px;
+            font-size: 13px;
         }
 
         h2 {
@@ -30,6 +30,7 @@
         th, td { 
             border: 1px solid black; 
             padding: 6px; 
+            vertical-align: top;
         }
 
         th { 
@@ -62,15 +63,15 @@
             margin: 5px auto;
         }
 
-        .foto-box {
-            margin-top: 15px;
+        .foto-wrap {
+            margin-top: 5px;
         }
 
-        .foto-box img {
-            width: 120px;
-            margin: 5px;
+        .foto-img {
+            width: 80px;
             border: 1px solid #ccc;
-            padding: 3px;
+            padding: 2px;
+            margin: 2px;
         }
     </style>
 </head>
@@ -92,7 +93,7 @@
             <th>Uraian</th>
             <th>Sub Uraian</th>
             <th>Nilai</th>
-            <th>Catatan</th>
+            <th>Catatan + Foto</th>
         </tr>
     </thead>
     <tbody>
@@ -109,7 +110,34 @@
                     <span class="text-danger">TIDAK</span>
                 @endif
             </td>
-            <td>{{ $d->catatan ?? '-' }}</td>
+
+            <td>
+                {{ $d->catatan ?? '-' }}
+
+                {{-- 🔥 TAMPILKAN SEMUA FOTO (ANTI GAGAL) --}}
+                @if($inspeksi->fotos && $inspeksi->fotos->count())
+                    <div class="foto-wrap">
+
+                        @foreach($inspeksi->fotos as $f)
+
+                            @php
+                                $path = public_path('storage/' . $f->path);
+                            @endphp
+
+                            @if(file_exists($path))
+                                <img src="data:image/png;base64,{{ base64_encode(file_get_contents($path)) }}" class="foto-img">
+                            @else
+                                <span style="color:red;">[file tidak ditemukan]</span>
+                            @endif
+
+                        @endforeach
+
+                    </div>
+                @else
+                    <span style="color:red;">[tidak ada foto]</span>
+                @endif
+
+            </td>
         </tr>
         @empty
         <tr>
@@ -119,24 +147,6 @@
     </tbody>
 </table>
 
-<!-- FOTO -->
-@if(isset($inspeksi->foto) && count($inspeksi->foto))
-<div class="foto-box">
-    <h4>Dokumentasi Foto</h4>
-
-    @foreach($inspeksi->foto as $f)
-        @php
-            $path = public_path('storage/' . $f->path);
-        @endphp
-
-        @if(file_exists($path))
-            <img src="data:image/png;base64,{{ base64_encode(file_get_contents($path)) }}">
-        @endif
-    @endforeach
-</div>
-@endif
-
-<!-- REKAP -->
 <div class="rekap">
     <h4>Rekap Nilai</h4>
     <p>Total Pertanyaan: <strong>{{ $total }}</strong></p>
@@ -151,11 +161,9 @@
     </h3>
 </div>
 
-<!-- TTD -->
 <table class="ttd">
     <tr>
 
-        <!-- K3RS -->
         <td>
             <strong>Petugas K3RS</strong><br><br>
 
@@ -177,7 +185,6 @@
             <strong>{{ $inspeksi->nama_petugas_k3rs ?? '-' }}</strong>
         </td>
 
-        <!-- RUANGAN -->
         <td>
             <strong>Petugas Ruangan</strong><br><br>
 

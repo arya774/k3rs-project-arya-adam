@@ -10,16 +10,11 @@ class FotoInspeksi extends Model
 {
     use HasFactory;
 
-    // =========================
-    // TABLE
-    // =========================
     protected $table = 'foto_inspeksi';
 
-    // =========================
-    // MASS ASSIGNMENT
-    // =========================
     protected $fillable = [
         'inspeksi_id',
+        'sub_uraian_id',
         'path',
         'nama_file',
         'mime_type',
@@ -28,40 +23,39 @@ class FotoInspeksi extends Model
         'keterangan',
     ];
 
-    // =========================
-    // CASTING
-    // =========================
     protected $casts = [
         'size' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
 
-    // =========================
-    // APPENDS (AUTO KE BLADE)
-    // =========================
     protected $appends = [
         'url',
         'size_kb',
-        'exists'
+        'exists',
+        'full_path',
+        'base64' // 🔥 INI KUNCI PDF
     ];
 
     // =========================
-    // RELASI KE INSPEKSI
+    // RELASI
     // =========================
     public function inspeksi()
     {
         return $this->belongsTo(Inspeksi::class, 'inspeksi_id');
     }
 
+    public function subUraian()
+    {
+        return $this->belongsTo(SubUraian::class, 'sub_uraian_id');
+    }
+
     // =========================
-    // ACCESSOR: URL FOTO (ANTI ERROR 🔥)
+    // URL (UNTUK WEB)
     // =========================
     public function getUrlAttribute(): ?string
     {
-        if (!$this->path) {
-            return null;
-        }
+        if (!$this->path) return null;
 
         $disk = $this->disk ?? 'public';
 
@@ -69,32 +63,52 @@ class FotoInspeksi extends Model
             if (Storage::disk($disk)->exists($this->path)) {
                 return Storage::disk($disk)->url($this->path);
             }
-        } catch (\Exception $e) {
-            // kalau disk error, fallback
-        }
+        } catch (\Exception $e) {}
 
-        // fallback aman
         return asset('storage/' . ltrim($this->path, '/'));
     }
 
     // =========================
-    // ACCESSOR: SIZE KB
+    // FULL PATH (UNTUK PDF)
     // =========================
-    public function getSizeKbAttribute(): float
+    public function getFullPathAttribute(): ?string
     {
-        return $this->size
-            ? round($this->size / 1024, 2)
-            : 0;
+        if (!$this->path) return null;
+
+        return public_path('storage/' . ltrim($this->path, '/'));
     }
 
     // =========================
-    // ACCESSOR: FILE EXISTS
+    // BASE64 (🔥 UNTUK PDF)
+    // =========================
+    public function getBase64Attribute(): ?string
+    {
+        $path = $this->full_path;
+
+        if (!$path || !file_exists($path)) {
+            return null;
+        }
+
+        $type = pathinfo($path, PATHINFO_EXTENSION);
+        $data = file_get_contents($path);
+
+        return 'data:image/' . $type . ';base64,' . base64_encode($data);
+    }
+
+    // =========================
+    // SIZE KB
+    // =========================
+    public function getSizeKbAttribute(): float
+    {
+        return $this->size ? round($this->size / 1024, 2) : 0;
+    }
+
+    // =========================
+    // FILE EXISTS
     // =========================
     public function getExistsAttribute(): bool
     {
-        if (!$this->path) {
-            return false;
-        }
+        if (!$this->path) return false;
 
         try {
             return Storage::disk($this->disk ?? 'public')->exists($this->path);
@@ -104,7 +118,7 @@ class FotoInspeksi extends Model
     }
 
     // =========================
-    // BOOT (DEFAULT DISK)
+    // AUTO DISK
     // =========================
     protected static function booted()
     {

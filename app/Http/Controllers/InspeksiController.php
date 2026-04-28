@@ -13,14 +13,12 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Exports\InspeksiExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Kategori;
-use App\Models\Uraian;
-use App\Models\SubUraian;
 
 class InspeksiController extends Controller
 {
     public function dashboard()
     {
-        $inspeksis = Inspeksi::with('detailInspeksi')->latest()->get();
+        $inspeksis = Inspeksi::with(['detailInspeksi', 'fotos'])->latest()->get();
         $kategoris = Kategori::with(['uraian.subUraian'])->get();
 
         $total = 0;
@@ -32,7 +30,7 @@ class InspeksiController extends Controller
 
             $total += $detail->count();
             $ya += $detail->where('nilai', 'ya')->count();
-            $tidak += $detail->where('nilai', 'tidak')->count();
+            $tidak += $detail->where('nilai', '!=', 'ya')->count();
         }
 
         $persentase = $total > 0 ? round(($ya / $total) * 100, 2) : 0;
@@ -65,7 +63,9 @@ class InspeksiController extends Controller
         DB::beginTransaction();
 
         try {
-
+            // =========================
+            // SIMPAN INSPEKSI
+            // =========================
             $inspeksi = Inspeksi::create([
                 'tanggal' => $request->tanggal,
                 'ruangan' => $request->ruangan,
@@ -75,6 +75,9 @@ class InspeksiController extends Controller
                 'paraf_petugas_ruangan' => $request->paraf_petugas_ruangan,
             ]);
 
+            // =========================
+            // SIMPAN DETAIL
+            // =========================
             if ($request->has('nilai')) {
                 foreach ($request->nilai as $subId => $nilai) {
                     DetailInspeksi::create([
@@ -86,43 +89,57 @@ class InspeksiController extends Controller
                 }
             }
 
-            if (Schema::hasTable('foto_inspeksi') && $request->hasFile('foto')) {
-                foreach ($request->file('foto') as $file) {
+            // =========================
+            // SIMPAN FOTO (ANTI ERROR)
+            // =========================
+            $adaKolomSub = Schema::hasColumn('foto_inspeksi', 'sub_uraian_id');
 
-                    if (!$file) continue;
+            if ($request->hasFile('foto')) {
 
-                    $path = $file->store('foto_inspeksi', 'public');
+                foreach ($request->file('foto') as $subUraianId => $files) {
 
-                    FotoInspeksi::create([
-                        'inspeksi_id' => $inspeksi->id,
-                        'path' => $path,
-                        'nama_file' => $file->getClientOriginalName(),
-                        'mime_type' => $file->getMimeType(),
-                        'size' => $file->getSize(),
-                        'disk' => 'public'
-                    ]);
+                    if (!is_array($files)) {
+                        $files = [$files];
+                    }
+
+                    foreach ($files as $file) {
+
+                        if (!$file || !$file->isValid()) continue;
+
+                        $path = $file->store('foto_inspeksi', 'public');
+
+                        // 🔥 AUTO ADAPT DB
+                        $data = [
+                            'inspeksi_id' => $inspeksi->id,
+                            'path'        => $path
+                        ];
+
+                        if ($adaKolomSub) {
+                            $data['sub_uraian_id'] = $subUraianId;
+                        }
+
+                        FotoInspeksi::create($data);
+                    }
                 }
             }
 
             DB::commit();
 
-            return redirect()->route('inspeksi.hasil', $inspeksi->id);
+            return redirect()->route('inspeksi.hasil', $inspeksi->id)
+                ->with('success', 'Data inspeksi berhasil disimpan!');
 
         } catch (\Exception $e) {
-
             DB::rollBack();
-            return back()->with('error', $e->getMessage());
+
+            dd($e->getMessage()); // biar gak gelap lagi
         }
     }
 
-    // =========================
-    // 🔥 HASIL (FIX DISINI)
-    // =========================
     public function hasil($id)
     {
         $inspeksi = Inspeksi::with([
             'detailInspeksi.subUraian.uraian.kategori',
-            'fotos' // ✅ WAJIB pakai ini
+            'fotos'
         ])->findOrFail($id);
 
         $detail = $inspeksi->detailInspeksi ?? collect();
@@ -130,7 +147,7 @@ class InspeksiController extends Controller
         $ya = $detail->where('nilai', 'ya')->count();
         $tidak = $detail->where('nilai', '!=', 'ya')->count();
         $total = $ya + $tidak;
-        $persentase = $total ? ($ya / $total) * 100 : 0;
+        $persentase = $total ? round(($ya / $total) * 100, 2) : 0;
 
         return view('inspeksi.hasil', compact(
             'inspeksi',
@@ -142,14 +159,11 @@ class InspeksiController extends Controller
         ));
     }
 
-    // =========================
-    // 🔥 CETAK (FIX DISINI JUGA)
-    // =========================
     public function cetak($id)
     {
         $inspeksi = Inspeksi::with([
             'detailInspeksi.subUraian.uraian.kategori',
-            'fotos' // ✅ WAJIB
+            'fotos'
         ])->findOrFail($id);
 
         $detail = $inspeksi->detailInspeksi ?? collect();
@@ -157,7 +171,7 @@ class InspeksiController extends Controller
         $ya = $detail->where('nilai', 'ya')->count();
         $tidak = $detail->where('nilai', '!=', 'ya')->count();
         $total = $ya + $tidak;
-        $persentase = $total ? ($ya / $total) * 100 : 0;
+        $persentase = $total ? round(($ya / $total) * 100, 2) : 0;
 
         $pdf = Pdf::loadView('inspeksi.pdf', compact(
             'inspeksi',
@@ -168,11 +182,41 @@ class InspeksiController extends Controller
             'persentase'
         ));
 
-        return $pdf->download('inspeksi-'.$id.'.pdf');
+        return $pdf->download('inspeksi-' . $id . '.pdf');
     }
 
     public function exportExcel()
     {
         return Excel::download(new InspeksiExport, 'inspeksi.xlsx');
+    }
+
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+
+        try {
+            $inspeksi = Inspeksi::with(['detailInspeksi', 'fotos'])->findOrFail($id);
+
+            foreach ($inspeksi->fotos as $foto) {
+                if ($foto->path && Storage::disk('public')->exists($foto->path)) {
+                    Storage::disk('public')->delete($foto->path);
+                }
+                $foto->delete();
+            }
+
+            foreach ($inspeksi->detailInspeksi as $detail) {
+                $detail->delete();
+            }
+
+            $inspeksi->delete();
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Data inspeksi berhasil dihapus!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            dd($e->getMessage());
+        }
     }
 }
