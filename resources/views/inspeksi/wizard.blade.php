@@ -1,53 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Wizard Inspeksi K3 RSUD</title>
+    <title>Wizard Inspeksi</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <style>
-        body{
-            background:#f4f8ff;
-            overflow-x: hidden;
+        body{ background:#f4f8ff; }
+
+        .sidebar{
+            position:fixed;
+            width:250px;
+            height:100vh;
+            background:#0d6efd;
+            color:white;
+            padding:20px;
         }
 
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 250px;
-            height: 100vh;
-            background: linear-gradient(180deg,#0d6efd,#0a58ca);
-            color: white;
-            padding: 20px;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        .sidebar a {
-            display: block;
-            color: white;
-            padding: 10px;
-            text-decoration: none;
-            border-radius: 8px;
-            margin-bottom: 6px;
-        }
-
-        .sidebar a:hover {
-            background: rgba(255,255,255,0.15);
-        }
-
-        .content {
-            margin-left: 250px;
-            padding: 25px;
-        }
-
-        .card-glass{
-            background: white;
-            border-radius: 15px;
-            border: none;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        .content{
+            margin-left:260px;
+            padding:20px;
         }
 
         .step{ display:none; }
@@ -55,25 +27,8 @@
 
         canvas{
             border:1px solid #ddd;
-            border-radius: 10px;
-            background:white;
-        }
-
-        .card h5 {
-            position: sticky;
-            top: 0;
-            background: white;
-            padding: 10px;
-            z-index: 10;
-        }
-
-        /* preview foto */
-        #preview img{
-            width:120px;
             border-radius:10px;
-            margin-right:10px;
-            margin-bottom:10px;
-            box-shadow:0 3px 10px rgba(0,0,0,0.2);
+            background:white;
         }
     </style>
 </head>
@@ -81,209 +36,126 @@
 <body>
 
 <div class="sidebar">
-    <h5>INSPEKSI K3</h5>
-    <hr>
-
-    <a href="{{ route('dashboard') }}">📊 Dashboard</a>
-    <a href="{{ route('inspeksi.wizard') }}">📝 Form Inspeksi</a>
-    <a href="{{ route('laporan.index') }}">📄 Laporan</a>
+    <h5>INSPEKSI</h5>
 </div>
 
 <div class="content">
 
-    <h3 class="mb-4">Form Inspeksi K3 RSUD</h3>
+<h3>Form Inspeksi</h3>
 
-    <form id="formInspeksi" method="POST" action="{{ route('inspeksi.store') }}" enctype="multipart/form-data">
-        @csrf
+<form id="formInspeksi" method="POST" action="{{ route('inspeksi.store') }}">
+@csrf
 
-        <!-- STEP 1 -->
-        <div class="step active card card-glass p-3" id="step1">
+<!-- STEP 1 -->
+<div id="step1" class="step active">
 
-            <div class="row">
-                <div class="col-md-6 mb-2">
-                    <label>Tanggal</label>
-                    <input type="date" id="tanggal" name="tanggal" class="form-control">
-                </div>
+    <input type="date" name="tanggal" class="form-control mb-2">
+    <input type="text" name="ruangan" class="form-control mb-2" placeholder="Ruangan">
 
-                <div class="col-md-6 mb-2">
-                    <label>Ruangan</label>
-                    <input type="text" name="ruangan" class="form-control">
-                </div>
-            </div>
+    <input type="text" name="nama_petugas_k3rs" class="form-control mb-2" placeholder="Petugas K3RS">
 
-            <hr>
+    <canvas id="pad1" width="300" height="120"></canvas>
+    <input type="hidden" name="paraf_petugas_k3rs" id="ttd1">
 
-            <h5>Petugas</h5>
+    <button type="button" class="btn btn-danger btn-sm mt-1" onclick="pad1.clear()">Hapus TTD</button>
 
-            <input type="text" name="nama_petugas_k3rs" class="form-control mb-2" placeholder="Petugas K3RS">
+    <input type="text" name="nama_petugas_ruangan" class="form-control mt-3 mb-2" placeholder="Petugas Ruangan">
 
-            <canvas id="signature-pad-k3rs" width="300" height="120"></canvas>
-            <input type="hidden" name="paraf_petugas_k3rs" id="paraf_k3rs">
+    <canvas id="pad2" width="300" height="120"></canvas>
+    <input type="hidden" name="paraf_petugas_ruangan" id="ttd2">
 
-            <button type="button" class="btn btn-danger btn-sm mt-2 mb-3" id="clearK3rs">Hapus TTD</button>
+    <button type="button" class="btn btn-danger btn-sm mt-1" onclick="pad2.clear()">Hapus TTD</button>
 
-            <input type="text" name="nama_petugas_ruangan" class="form-control mb-2" placeholder="Petugas Ruangan">
-
-            <canvas id="signature-pad-ruangan" width="300" height="120"></canvas>
-            <input type="hidden" name="paraf_petugas_ruangan" id="paraf_ruangan">
-
-            <button type="button" class="btn btn-danger btn-sm mt-2 mb-3" id="clearRuangan">Hapus TTD</button>
-
-            <div class="mt-3 text-end">
-                <button type="button" class="btn btn-primary" onclick="showStep(2)">Lanjut →</button>
-            </div>
-
-        </div>
-
-        <form action="{{ route('inspeksi.store') }}" method="POST">
-    @csrf
-
-    @foreach($subUraian as $item)
-        <div class="mb-3">
-            <label>{{ $item->nama }}</label><br>
-
-            <input type="radio" name="sub_uraian[{{ $item->id }}]" value="ya"> Ya
-            <input type="radio" name="sub_uraian[{{ $item->id }}]" value="tidak"> Tidak
-        </div>
-    @endforeach
-
-    <button type="submit" class="btn btn-success">Simpan</button>
-</form>
-
-        <!-- STEP 2 -->
-        <div class="step card card-glass p-3" id="step2">
-
-            <h5 class="mb-3">Checklist Inspeksi</h5>
-
-            <div class="mb-3">
-                <select id="filterKategori" class="form-control">
-                    <option value="">Pilih Kategori</option>
-                    @foreach($kategoris as $k)
-                        <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            @foreach($kategoris as $k)
-            <div class="kategori-box" id="kategori-{{ $k->id }}" style="display:none;">
-                <div class="card mb-3 p-3">
-
-                    <b class="text-primary">{{ $k->nama_kategori }}</b>
-                    <hr>
-
-                    @foreach($k->uraian as $u)
-
-                        <b>{{ $u->nama_uraian }}</b>
-
-                        @foreach($u->subUraian as $s)
-
-                        <div class="border rounded p-2 mb-2">
-
-                            <div class="d-flex justify-content-between">
-                                <span>{{ $s->nama_sub_uraian }}</span>
-                            </div>
-
-                            <div class="mt-2">
-                                <label><input type="radio" name="nilai[{{ $s->id }}]" value="ya"> Ya</label>
-                                <label><input type="radio" name="nilai[{{ $s->id }}]" value="tidak"> Tidak</label>
-                            </div>
-
-                            <textarea name="catatan_multi[{{ $s->id }}]" class="form-control mt-2" placeholder="Catatan"></textarea>
-
-                        </div>
-
-                        @endforeach
-
-                        <hr>
-
-                    @endforeach
-
-                </div>
-            </div>
-            @endforeach
-
-            <!-- 🔥 UPLOAD FOTO -->
-            <div class="card p-3 mt-3">
-                <label class="mb-2"><b>Upload Foto Bukti</b></label>
-
-                <input type="file" name="foto[]" id="foto" class="form-control" multiple accept="image/*">
-
-                <small class="text-muted">Bisa pilih lebih dari 1 foto</small>
-
-                <div id="preview" class="mt-3 d-flex flex-wrap"></div>
-            </div>
-
-            <button type="submit" id="btnSimpan" class="btn btn-success w-100 mt-3">
-                SIMPAN INSPEKSI
-            </button>
-
-            <div id="loading" class="text-center mt-2 d-none">
-                <div class="spinner-border text-primary"></div>
-                <p>Menyimpan...</p>
-            </div>
-
-        </div>
-
-    </form>
+    <button type="button" class="btn btn-primary mt-3" onclick="nextStep()">Lanjut</button>
 
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<!-- STEP 2 -->
+<div id="step2" class="step">
+
+    <select id="filterKategori" class="form-control mb-3">
+        <option value="">Pilih Kategori</option>
+        @foreach($kategoris as $k)
+            <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
+        @endforeach
+    </select>
+
+    @foreach($kategoris as $k)
+    <div class="kategori-box" id="kat-{{ $k->id }}" style="display:none">
+
+        <h5>{{ $k->nama_kategori }}</h5>
+
+        @foreach($k->uraian as $u)
+
+            <b>{{ $u->nama_uraian }}</b>
+
+            @foreach($u->subUraian as $s)
+
+            <div class="border p-2 mb-2">
+
+                {{ $s->nama_sub_uraian }}
+
+                <div>
+                    <label>
+                      <input type="radio" name="nilai[{{ $s->id }}]" value="ya" required> Ya
+                    </label>
+
+                    <label>
+                        <input type="radio" name="nilai[{{ $s->id }}]" value="tidak" required> Tidak
+                    </label>
+                </div>
+
+                <textarea name="catatan_multi[{{ $s->id }}]" class="form-control mt-1" placeholder="Catatan"></textarea>
+
+            </div>
+
+            @endforeach
+
+        @endforeach
+
+    </div>
+    @endforeach
+
+    <button type="submit" class="btn btn-success w-100 mt-3">Simpan</button>
+
+</div>
+
+</form>
+
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 
 <script>
 
-function showStep(step){
-    $('.step').removeClass('active');
-    $('#step'+step).addClass('active');
+function nextStep(){
+    document.getElementById('step1').classList.remove('active');
+    document.getElementById('step2').classList.add('active');
 }
 
-$('#tanggal').val(new Date().toISOString().split('T')[0]);
+document.getElementById('filterKategori').addEventListener('change', function(){
+    document.getElementById('filterKategori').addEventListener(...).SignaturePad
 
-$('#filterKategori').change(function(){
-    $('.kategori-box').hide();
-    $('#kategori-'+$(this).val()).show();
+    if(this.value){
+        document.getElementById('kat-'+this.value).style.display='block';
+    }
 });
 
-let padK3rs = new SignaturePad(document.getElementById('signature-pad-k3rs'));
-let padRuangan = new SignaturePad(document.getElementById('signature-pad-ruangan'));
+let pad1 = new SignaturePad(document.getElementById('pad1'));
+let pad2 = new SignaturePad(document.getElementById('pad2'));
 
-$('#clearK3rs').click(() => padK3rs.clear());
-$('#clearRuangan').click(() => padRuangan.clear());
+document.getElementById('formInspeksi').addEventListener('submit', function(e){
 
-$('#formInspeksi').on('submit', function(e){
+    let semuaSub = document.querySelectorAll("input[type=radio]");
+    let yangDipilih = document.querySelectorAll("input[type=radio]:checked");
 
-    if(padK3rs.isEmpty() || padRuangan.isEmpty()){
-        alert("Tanda tangan wajib diisi!");
+    if(yangDipilih.length === 0){
+        alert("Minimal isi 1 sub uraian!");
         e.preventDefault();
         return;
     }
 
-    $('#paraf_k3rs').val(padK3rs.toDataURL());
-    $('#paraf_ruangan').val(padRuangan.toDataURL());
-
-    $('#btnSimpan').prop('disabled',true).text('Menyimpan...');
-    $('#loading').removeClass('d-none');
-});
-
-// 🔥 PREVIEW FOTO
-document.getElementById('foto').addEventListener('change', function(event) {
-
-    let preview = document.getElementById('preview');
-    preview.innerHTML = "";
-
-    Array.from(event.target.files).forEach(file => {
-
-        let reader = new FileReader();
-
-        reader.onload = function(e) {
-            let img = document.createElement("img");
-            img.src = e.target.result;
-            preview.appendChild(img);
-        }
-
-        reader.readAsDataURL(file);
-    });
 });
 
 </script>

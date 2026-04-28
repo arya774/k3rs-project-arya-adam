@@ -165,11 +165,11 @@
                     $pathK3rs = $ttdK3rs ? storage_path('app/public/paraf/'.$ttdK3rs) : null;
                 @endphp
 
-                @if($ttdK3rs && file_exists($pathK3rs))
-                    <img src="{{ asset('storage/paraf/'.$ttdK3rs) }}" class="ttd-img">
-                @else
-                    <span class="text-danger">TTD tidak tersedia</span>
-                @endif
+                @if($inspeksi->paraf_petugas_k3rs)
+    <img src="{{ $inspeksi->paraf_petugas_k3rs }}" class="ttd-img">
+@else
+    <span class="text-danger">TTD tidak tersedia</span>
+@endif
             </div>
 
             <div class="ttd-line"></div>
@@ -186,11 +186,11 @@
                     $pathRuangan = $ttdRuangan ? storage_path('app/public/paraf/'.$ttdRuangan) : null;
                 @endphp
 
-                @if($ttdRuangan && file_exists($pathRuangan))
-                    <img src="{{ asset('storage/paraf/'.$ttdRuangan) }}" class="ttd-img">
-                @else
-                    <span class="text-danger">TTD tidak tersedia</span>
-                @endif
+                @if($inspeksi->paraf_petugas_ruangan)
+    <img src="{{ $inspeksi->paraf_petugas_ruangan }}" class="ttd-img">
+@else
+    <span class="text-danger">TTD tidak tersedia</span>
+@endif
             </div>
 
             <div class="ttd-line"></div>
