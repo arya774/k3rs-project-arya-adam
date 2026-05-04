@@ -6,7 +6,6 @@
 
     <style>
         body { background: #f8f9fa; }
-
         .card { border-radius: 10px; }
 
         th {
@@ -60,7 +59,6 @@
 
 <div class="container mt-4">
 
-    <!-- HEADER -->
     <div class="card shadow-sm p-3">
         <h3 class="text-center mb-3">Hasil Inspeksi K3 RSUD Kota Bogor</h3>
 
@@ -83,7 +81,6 @@
             </div>
         </div>
 
-        <!-- TABLE -->
         <div class="table-responsive">
             <table class="table table-bordered">
 
@@ -95,7 +92,7 @@
                         <th>Sub-Uraian</th>
                         <th>Nilai</th>
                         <th>Catatan</th>
-                        <th>Foto</th> <!-- 🔥 TAMBAHAN -->
+                        <th>Foto</th>
                     </tr>
                 </thead>
 
@@ -117,18 +114,18 @@
 
                         <td>{{ $d->catatan ?? '-' }}</td>
 
-                        <!-- 🔥 FOTO -->
-                        <td>
-                            @if($inspeksi->fotos->count())
+                        <!-- 🔥 FOTO FIX TOTAL -->
+                        <td class="text-center">
+                            @if($inspeksi->fotos && $inspeksi->fotos->count())
                                 @foreach($inspeksi->fotos as $foto)
-                                    <a href="{{ $foto->url }}" target="_blank">
-                                        <img src="{{ $foto->url }}"
+                                    <a href="{{ asset('storage/'.$foto->path) }}" target="_blank">
+                                        <img src="{{ asset('storage/'.$foto->path) }}"
                                              width="70"
                                              class="img-thumbnail mb-1">
                                     </a>
                                 @endforeach
                             @else
-                                -
+                                <span class="text-muted">-</span>
                             @endif
                         </td>
 
@@ -144,7 +141,6 @@
         </div>
     </div>
 
-    <!-- REKAP -->
     <div class="rekap-box mt-3">
         <h4>Rekap Nilai</h4>
 
@@ -171,23 +167,18 @@
         </div>
     </div>
 
-    <!-- TTD -->
+    <!-- 🔥 TTD (SUDAH BENAR, TIDAK DIUBAH) -->
     <div class="ttd-box row text-center mt-5">
 
         <div class="col-md-6">
             <p class="ttd-label">Petugas K3RS</p>
 
             <div class="ttd-img-box">
-                @php
-                    $ttdK3rs = $inspeksi->paraf_petugas_k3rs ?? null;
-                    $pathK3rs = $ttdK3rs ? storage_path('app/public/paraf/'.$ttdK3rs) : null;
-                @endphp
-
                 @if($inspeksi->paraf_petugas_k3rs)
-    <img src="{{ $inspeksi->paraf_petugas_k3rs }}" class="ttd-img">
-@else
-    <span class="text-danger">TTD tidak tersedia</span>
-@endif
+                    <img src="{{ $inspeksi->paraf_petugas_k3rs }}" class="ttd-img">
+                @else
+                    <span class="text-danger">TTD tidak tersedia</span>
+                @endif
             </div>
 
             <div class="ttd-line"></div>
@@ -198,16 +189,11 @@
             <p class="ttd-label">Petugas Ruangan</p>
 
             <div class="ttd-img-box">
-                @php
-                    $ttdRuangan = $inspeksi->paraf_petugas_ruangan ?? null;
-                    $pathRuangan = $ttdRuangan ? storage_path('app/public/paraf/'.$ttdRuangan) : null;
-                @endphp
-
                 @if($inspeksi->paraf_petugas_ruangan)
-    <img src="{{ $inspeksi->paraf_petugas_ruangan }}" class="ttd-img">
-@else
-    <span class="text-danger">TTD tidak tersedia</span>
-@endif
+                    <img src="{{ $inspeksi->paraf_petugas_ruangan }}" class="ttd-img">
+                @else
+                    <span class="text-danger">TTD tidak tersedia</span>
+                @endif
             </div>
 
             <div class="ttd-line"></div>

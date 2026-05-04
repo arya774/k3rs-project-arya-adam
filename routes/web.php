@@ -50,16 +50,11 @@ Route::middleware('auth')->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | 🔥 API UNTUK AJAX (WAJIB ADA)
+    | 🔥 API UNTUK AJAX
     |--------------------------------------------------------------------------
     */
-    Route::get('/inspeksi/get-uraian-all', function () {
-        return Uraian::all();
-    });
-
-    Route::get('/inspeksi/get-sub-all', function () {
-        return SubUraian::with('uraian')->latest()->get();
-    });
+    Route::get('/inspeksi/get-uraian-all', fn () => Uraian::all());
+    Route::get('/inspeksi/get-sub-all', fn () => SubUraian::with('uraian')->latest()->get());
 
     /*
     |--------------------------------------------------------------------------
@@ -68,10 +63,14 @@ Route::middleware('auth')->group(function () {
     */
     Route::prefix('inspeksi')->name('inspeksi.')->group(function () {
 
+        // ✅ TAMBAHAN (INI YANG BIKIN ERROR LO HILANG)
+        Route::get('/', [InspeksiController::class, 'index'])
+            ->name('index');
+
         Route::get('/wizard', [InspeksiController::class, 'wizard'])
             ->name('wizard');
 
-        Route::post('/store', [InspeksiController::class, 'store'])
+        Route::post('/', [InspeksiController::class, 'store'])
             ->name('store');
 
         Route::get('/hasil/{id}', [InspeksiController::class, 'hasil'])

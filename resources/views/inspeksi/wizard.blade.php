@@ -17,6 +17,19 @@
             padding:20px;
         }
 
+        .sidebar a{
+            color:white;
+            text-decoration:none;
+            padding:8px;
+            display:block;
+            border-radius:6px;
+        }
+
+        .sidebar a.active,
+        .sidebar a:hover{
+            background:rgba(255,255,255,0.2);
+        }
+
         .content{
             margin-left:260px;
             padding:20px;
@@ -35,7 +48,7 @@
         #preview img{
             width:110px;
             border-radius:10px;
-            background:white;
+            margin:5px;
         }
     </style>
 </head>
@@ -43,129 +56,125 @@
 <body>
 
 <div class="sidebar">
-    <h5>INSPEKSI</h5>
+    <h5>INSPEKSI K3</h5>
+    <hr>
+
+    <a href="{{ route('dashboard') }}">Dashboard</a>
+    <a href="{{ route('inspeksi.index') }}" class="active">Form Inspeksi</a>
+    <a href="{{ route('laporan.index') }}">Laporan</a>
 </div>
 
 <div class="content">
 
 <h3>Form Inspeksi</h3>
 
-<form id="formInspeksi" method="POST" action="{{ route('inspeksi.store') }}">
+<form id="formInspeksi" method="POST" action="{{ route('inspeksi.store') }}" enctype="multipart/form-data">
 @csrf
 
 <!-- STEP 1 -->
 <div id="step1" class="step active">
 
-            <div class="row">
-                <div class="col-md-6 mb-2">
-                    <label>Tanggal</label>
-                    <input type="date" name="tanggal" id="tanggal" class="form-control" required>
-                </div>
-
-                <div class="col-md-6 mb-2">
-                    <label>Ruangan</label>
-                    <input type="text" name="ruangan" class="form-control" required>
-                </div>
-            </div>
-
-    <canvas id="pad1" width="300" height="120"></canvas>
-    <input type="hidden" name="paraf_petugas_k3rs" id="ttd1">
-
-    <button type="button" class="btn btn-danger btn-sm mt-1" onclick="pad1.clear()">Hapus TTD</button>
-
-            <input type="text" name="nama_petugas_k3rs" class="form-control mb-2" placeholder="Petugas K3RS" required>
-
-    <canvas id="pad2" width="300" height="120"></canvas>
-    <input type="hidden" name="paraf_petugas_ruangan" id="ttd2">
-
-    <button type="button" class="btn btn-danger btn-sm mt-1" onclick="pad2.clear()">Hapus TTD</button>
-
-            <input type="text" name="nama_petugas_ruangan" class="form-control mb-2" placeholder="Petugas Ruangan" required>
-
-            <canvas id="signature-pad-ruangan" width="300" height="120"></canvas>
-            <input type="hidden" name="paraf_petugas_ruangan" id="paraf_ruangan">
-
-            <button type="button" class="btn btn-danger btn-sm mt-2 mb-3" id="clearRuangan">Hapus TTD</button>
-
-            <div class="mt-3 text-end">
-                <button type="button" class="btn btn-primary" onclick="showStep(2)">Lanjut →</button>
-            </div>
-
+    <div class="row">
+        <div class="col-md-6 mb-2">
+            <label>Tanggal</label>
+            <input type="date" name="tanggal" class="form-control" required>
         </div>
 
-        <!-- STEP 2 -->
-        <div class="step card card-glass p-3" id="step2">
+        <div class="col-md-6 mb-2">
+            <label>Ruangan</label>
+            <input type="text" name="ruangan" class="form-control" required>
+        </div>
+    </div>
 
-            <h5 class="mb-3">Checklist Inspeksi</h5>
+    <!-- TTD K3RS -->
+    <label class="mt-2">TTD Petugas K3RS</label>
+    <canvas id="padK3rs" width="300" height="120"></canvas>
+    <input type="hidden" name="paraf_petugas_k3rs" id="ttd_k3rs">
+    <button type="button" class="btn btn-danger btn-sm mt-1" id="clearK3rs">Hapus</button>
 
-            <select id="filterKategori" class="form-control mb-3">
-                <option value="">Pilih Kategori</option>
-                @foreach($kategoris as $k)
-                    <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
-                @endforeach
-            </select>
+    <input type="text" name="nama_petugas_k3rs" class="form-control mt-2" placeholder="Nama Petugas K3RS" required>
 
-            @foreach($kategoris as $k)
-            <div class="kategori-box" id="kategori-{{ $k->id }}" style="display:none;">
-                <div class="card mb-3 p-3">
+    <!-- TTD RUANGAN -->
+    <label class="mt-3">TTD Petugas Ruangan</label>
+    <canvas id="padRuangan" width="300" height="120"></canvas>
+    <input type="hidden" name="paraf_petugas_ruangan" id="ttd_ruangan">
+    <button type="button" class="btn btn-danger btn-sm mt-1" id="clearRuangan">Hapus</button>
 
-                    <b class="text-primary">{{ $k->nama_kategori }}</b>
-                    <hr>
+    <input type="text" name="nama_petugas_ruangan" class="form-control mt-2" placeholder="Nama Petugas Ruangan" required>
 
-                    @foreach($k->uraian as $u)
+    <div class="mt-3 text-end">
+        <button type="button" class="btn btn-primary" onclick="nextStep()">Lanjut →</button>
+    </div>
 
-                        <b>{{ $u->nama_uraian }}</b>
+</div>
 
-                        @foreach($u->subUraian as $s)
+<!-- STEP 2 -->
+<div class="step card p-3" id="step2">
 
-                        <div class="border rounded p-2 mb-2">
+    <h5 class="mb-3">Checklist Inspeksi</h5>
 
-                            <div class="d-flex justify-content-between">
-                                <span>{{ $s->nama_sub_uraian }}</span>
-                            </div>
+    <select id="filterKategori" class="form-control mb-3">
+        <option value="">Pilih Kategori</option>
+        @foreach($kategoris as $k)
+            <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
+        @endforeach
+    </select>
 
-                            <div class="mt-2">
-                                <label><input type="radio" name="nilai[{{ $s->id }}]" value="ya"> Ya</label>
-                                <label><input type="radio" name="nilai[{{ $s->id }}]" value="tidak"> Tidak</label>
-                            </div>
+    @foreach($kategoris as $k)
+    <div class="kategori-box" id="kategori-{{ $k->id }}" style="display:none;">
+        <div class="card mb-3 p-3">
 
-                            <textarea name="catatan_multi[{{ $s->id }}]" class="form-control mt-2" placeholder="Catatan (opsional)"></textarea>
+            <b class="text-primary">{{ $k->nama_kategori }}</b>
+            <hr>
 
-                        </div>
+            @foreach($k->uraian as $u)
 
-                        @endforeach
+                <b>{{ $u->nama_uraian }}</b>
 
-                        <hr>
+                @foreach($u->subUraian as $s)
 
-                    @endforeach
+                <div class="border rounded p-2 mb-2">
+
+                    <span>{{ $s->nama_sub_uraian }}</span>
+
+                    <div class="mt-2">
+                        <label><input type="radio" name="nilai[{{ $s->id }}]" value="ya"> Ya</label>
+                        <label class="ms-2"><input type="radio" name="nilai[{{ $s->id }}]" value="tidak"> Tidak</label>
+                    </div>
+
+                    <textarea name="catatan_multi[{{ $s->id }}]" class="form-control mt-2"></textarea>
 
                 </div>
-            </div>
+
+                @endforeach
+
+                <hr>
+
             @endforeach
 
-            <!-- FOTO OPTIONAL -->
-            <div class="card p-3 mt-3">
-                <label><b>Upload Foto (Opsional)</b></label>
-
-                <input type="file" name="foto[]" id="foto" class="form-control" multiple accept="image/*">
-
-                <small class="text-muted">Tidak wajib diisi</small>
-
-                <div id="preview" class="mt-3 d-flex flex-wrap"></div>
-            </div>
-
-            <button type="submit" id="btnSimpan" class="btn btn-success w-100 mt-3">
-                SIMPAN INSPEKSI
-            </button>
-
-            <div id="loading" class="text-center mt-2 d-none">
-                <div class="spinner-border text-primary"></div>
-                <p>Menyimpan...</p>
-            </div>
-
         </div>
+    </div>
+    @endforeach
 
-    </form>
+    <!-- FOTO -->
+    <div class="card p-3 mt-3">
+        <label><b>Upload Foto (Opsional)</b></label>
+        <input type="file" name="foto[]" id="foto" class="form-control" multiple>
+        <div id="preview" class="d-flex flex-wrap mt-2"></div>
+    </div>
+
+    <button type="submit" id="btnSimpan" class="btn btn-success w-100 mt-3">
+        SIMPAN INSPEKSI
+    </button>
+
+    <div id="loading" class="text-center mt-2 d-none">
+        <div class="spinner-border text-primary"></div>
+        <p>Menyimpan...</p>
+    </div>
+
+</div>
+
+</form>
 
 </div>
 
@@ -175,12 +184,9 @@
 <script>
 
 function nextStep(){
-    document.getElementById('step1').classList.remove('active');
-    document.getElementById('step2').classList.add('active');
+    $('#step1').removeClass('active');
+    $('#step2').addClass('active');
 }
-
-document.getElementById('filterKategori').addEventListener('change', function(){
-    document.getElementById('filterKategori').addEventListener(...).SignaturePad
 
 $('#filterKategori').on('change', function(){
     $('.kategori-box').hide();
@@ -189,42 +195,40 @@ $('#filterKategori').on('change', function(){
     }
 });
 
-let pad1 = new SignaturePad(document.getElementById('pad1'));
-let pad2 = new SignaturePad(document.getElementById('pad2'));
+let padK3rs = new SignaturePad(document.getElementById('padK3rs'));
+let padRuangan = new SignaturePad(document.getElementById('padRuangan'));
 
 $('#clearK3rs').click(()=>padK3rs.clear());
 $('#clearRuangan').click(()=>padRuangan.clear());
 
-    let semuaSub = document.querySelectorAll("input[type=radio]");
-    let yangDipilih = document.querySelectorAll("input[type=radio]:checked");
+$('#formInspeksi').on('submit', function(e){
 
-    if(yangDipilih.length === 0){
-        alert("Minimal isi 1 sub uraian!");
+    console.log("SUBMIT JALAN");
+
+    if($('input[type=radio]:checked').length === 0){
+        alert("Checklist belum diisi!");
         e.preventDefault();
         return;
     }
 
-    $('#paraf_k3rs').val(padK3rs.toDataURL());
-    $('#paraf_ruangan').val(padRuangan.toDataURL());
+    if(padK3rs.isEmpty() || padRuangan.isEmpty()){
+        alert("TTD wajib diisi!");
+        e.preventDefault();
+        return;
+    }
 
-    $('#btnSimpan').prop('disabled',true).text('Menyimpan...');
-    $('#loading').removeClass('d-none');
+    document.getElementById('ttd_k3rs').value = padK3rs.toDataURL();
+    document.getElementById('ttd_ruangan').value = padRuangan.toDataURL();
+
 });
 
-// preview foto
 $('#foto').on('change', function(){
-
     let preview = $('#preview');
     preview.html('');
 
     Array.from(this.files).forEach(file => {
-
         let reader = new FileReader();
-
-        reader.onload = function(e){
-            preview.append(`<img src="${e.target.result}">`);
-        }
-
+        reader.onload = e => preview.append(`<img src="${e.target.result}">`);
         reader.readAsDataURL(file);
     });
 });
