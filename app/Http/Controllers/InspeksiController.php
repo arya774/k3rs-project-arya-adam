@@ -16,6 +16,11 @@ use App\Models\Kategori;
 
 class InspeksiController extends Controller
 {
+    public function index()
+    {
+        return redirect()->route('inspeksi.wizard');
+    }
+
     public function dashboard()
     {
         $inspeksis = Inspeksi::with(['detailInspeksi', 'fotos'])->latest()->get();
@@ -58,14 +63,14 @@ class InspeksiController extends Controller
             'ruangan' => 'required',
             'nama_petugas_k3rs' => 'required',
             'nama_petugas_ruangan' => 'required',
+            'paraf_petugas_k3rs' => 'required',
+            'paraf_petugas_ruangan' => 'required',
         ]);
 
         DB::beginTransaction();
 
         try {
-            // =========================
-            // SIMPAN INSPEKSI
-            // =========================
+
             $inspeksi = Inspeksi::create([
                 'tanggal' => $request->tanggal,
                 'ruangan' => $request->ruangan,
@@ -75,9 +80,6 @@ class InspeksiController extends Controller
                 'paraf_petugas_ruangan' => $request->paraf_petugas_ruangan,
             ]);
 
-            // =========================
-            // SIMPAN DETAIL
-            // =========================
             if ($request->has('nilai')) {
                 foreach ($request->nilai as $subId => $nilai) {
                     DetailInspeksi::create([
@@ -89,9 +91,6 @@ class InspeksiController extends Controller
                 }
             }
 
-            // =========================
-            // SIMPAN FOTO (ANTI ERROR)
-            // =========================
             $adaKolomSub = Schema::hasColumn('foto_inspeksi', 'sub_uraian_id');
 
             if ($request->hasFile('foto')) {
@@ -108,17 +107,14 @@ class InspeksiController extends Controller
 
                         $path = $file->store('foto_inspeksi', 'public');
 
-                        // 🔥 AUTO ADAPT DB
-                        $data = [
+                        FotoInspeksi::create([
                             'inspeksi_id' => $inspeksi->id,
-                            'path'        => $path
-                        ];
+                            'sub_uraian_id' => $adaKolomSub ? $subUraianId : null,
 
-                        if ($adaKolomSub) {
-                            $data['sub_uraian_id'] = $subUraianId;
-                        }
-
-                        FotoInspeksi::create($data);
+                            // 🔥 FIX PENTING: samakan dengan blade
+                            'url' => $path,
+                            'path' => $path
+                        ]);
                     }
                 }
             }
@@ -130,8 +126,7 @@ class InspeksiController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-
-            dd($e->getMessage()); // biar gak gelap lagi
+            dd($e->getMessage());
         }
     }
 
